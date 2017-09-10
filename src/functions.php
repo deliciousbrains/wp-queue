@@ -2,7 +2,6 @@
 
 use WP_Queue\DatabaseQueue;
 use WP_Queue\Job;
-use WP_Queue\Queue;
 
 if ( ! function_exists( 'wp_queue' ) ) {
 	/**

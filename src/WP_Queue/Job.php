@@ -37,7 +37,7 @@ abstract class Job {
 	private $released = false;
 
 	/**
-	 *
+	 * Handle job logic.
 	 */
 	abstract public function handle();
 

@@ -6,6 +6,9 @@ use Carbon\Carbon;
 
 class DatabaseQueue extends Queue {
 
+	/**
+	 * @var wpdb
+	 */
 	protected $database;
 
 	/**
@@ -16,7 +19,7 @@ class DatabaseQueue extends Queue {
 	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param        $wpdb
+	 * @param wpdb   $wpdb
 	 * @param string $table
 	 */
 	public function __construct( $wpdb, $table = 'jobs' ) {
@@ -151,6 +154,19 @@ class DatabaseQueue extends Queue {
 		$job->set_created_at( new Carbon( $raw_job->created_at ) );
 
 		return $job;
+	}
+
+	/**
+	 * Get MySQL datetime.
+	 *
+	 * @param int $offset Seconds, can pass negative int.
+	 *
+	 * @return string
+	 */
+	protected function datetime( $offset = 0 ) {
+		$timestamp = time() + $offset;
+
+		return gmdate( 'Y-m-d H:i:s', $timestamp );
 	}
 
 }

@@ -51,17 +51,4 @@ abstract class Queue {
 	 */
 	abstract protected function vitalize_job( $raw_job );
 
-	/**
-	 * Get MySQL datetime.
-	 *
-	 * @param int $offset Seconds, can pass negative int.
-	 *
-	 * @return string
-	 */
-	protected function datetime( $offset = 0 ) {
-		$timestamp = time() + $offset;
-
-		return gmdate( 'Y-m-d H:i:s', $timestamp );
-	}
-
 }
