@@ -18,7 +18,7 @@ class Command extends WP_CLI_Command {
 
 		$charset_collate = $wpdb->get_charset_collate();
 
-		$sql = "CREATE TABLE {$wpdb->prefix}jobs (
+		$sql = "CREATE TABLE {$wpdb->prefix}queue_jobs (
 				id bigint(20) NOT NULL AUTO_INCREMENT,
                 job longtext NOT NULL,
                 attempts tinyint(3) NOT NULL DEFAULT 0,
@@ -30,7 +30,18 @@ class Command extends WP_CLI_Command {
 
 		dbDelta( $sql );
 
-		WP_CLI::success( "Table {$wpdb->prefix}jobs created." );
+		WP_CLI::success( "Table {$wpdb->prefix}queue_jobs created." );
+
+		$sql = "CREATE TABLE {$wpdb->prefix}queue_failures (
+				id bigint(20) NOT NULL AUTO_INCREMENT,
+                job longtext NOT NULL,
+                failed_at datetime NOT NULL,
+                PRIMARY KEY  (id)
+				) $charset_collate;";
+
+		dbDelta( $sql );
+
+		WP_CLI::success( "Table {$wpdb->prefix}queue_failures created." );
 	}
 
 	/**

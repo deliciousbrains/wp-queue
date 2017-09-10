@@ -17,14 +17,19 @@ class DatabaseQueue extends Queue {
 	protected $table;
 
 	/**
+	 * @var string
+	 */
+	protected $failures;
+
+	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param wpdb   $wpdb
-	 * @param string $table
+	 * @param wpdb $wpdb
 	 */
-	public function __construct( $wpdb, $table = 'jobs' ) {
+	public function __construct( $wpdb ) {
 		$this->database = $wpdb;
-		$this->table    = $this->database->prefix . $table;
+		$this->table    = $this->database->prefix . 'queue_jobs';
+		$this->failures = $this->database->prefix . 'queue_failures';
 	}
 
 	/**
