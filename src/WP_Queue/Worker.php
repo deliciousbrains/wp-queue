@@ -12,12 +12,19 @@ class Worker {
 	private $queue;
 
 	/**
+	 * @var int
+	 */
+	private $attempts;
+
+	/**
 	 * Worker constructor.
 	 *
 	 * @param Queue $queue
+	 * @param int   $attempts
 	 */
-	public function __construct( $queue ) {
-		$this->queue = $queue;
+	public function __construct( $queue, $attempts = 3 ) {
+		$this->queue    = $queue;
+		$this->attempts = $attempts;
 	}
 
 	/**
@@ -38,7 +45,9 @@ class Worker {
 			$job->release();
 		}
 
-		if ( $job->released() ) {
+		if ( $job->released() && $job->attempts() >= $this->attempts ) {
+			$this->queue->failure( $job );
+		} else if ( $job->released() ) {
 			$this->queue->release( $job );
 		} else {
 			$this->queue->delete( $job );

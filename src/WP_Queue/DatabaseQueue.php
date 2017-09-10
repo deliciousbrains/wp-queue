@@ -14,12 +14,12 @@ class DatabaseQueue extends Queue {
 	/**
 	 * @var string
 	 */
-	protected $table;
+	protected $jobs_table;
 
 	/**
 	 * @var string
 	 */
-	protected $failures;
+	protected $failures_table;
 
 	/**
 	 * DatabaseQueue constructor.
@@ -27,9 +27,9 @@ class DatabaseQueue extends Queue {
 	 * @param wpdb $wpdb
 	 */
 	public function __construct( $wpdb ) {
-		$this->database = $wpdb;
-		$this->table    = $this->database->prefix . 'queue_jobs';
-		$this->failures = $this->database->prefix . 'queue_failures';
+		$this->database       = $wpdb;
+		$this->jobs_table     = $this->database->prefix . 'queue_jobs';
+		$this->failures_table = $this->database->prefix . 'queue_failures';
 	}
 
 	/**
@@ -41,7 +41,7 @@ class DatabaseQueue extends Queue {
 	 * @return bool|int
 	 */
 	public function push( Job $job, $delay = 0 ) {
-		$result = $this->database->insert( $this->table, array(
+		$result = $this->database->insert( $this->jobs_table, array(
 			'job'          => serialize( $job ),
 			'available_at' => $this->datetime( $delay ),
 			'created_at'   => $this->datetime(),
@@ -63,7 +63,7 @@ class DatabaseQueue extends Queue {
 		$this->release_reserved();
 
 		$sql = $this->database->prepare( "
-			SELECT * FROM {$this->table}
+			SELECT * FROM {$this->jobs_table}
 			WHERE reserved_at IS NULL
 			AND available_at <= %s
 			ORDER BY available_at
@@ -93,7 +93,7 @@ class DatabaseQueue extends Queue {
 			'id' => $job->id(),
 		);
 
-		$this->database->delete( $this->table, $where );
+		$this->database->delete( $this->jobs_table, $where );
 	}
 
 	/**
@@ -108,9 +108,23 @@ class DatabaseQueue extends Queue {
 			'reserved_at'  => null,
 		);
 
-		$this->database->update( $this->table, $data, array(
+		$this->database->update( $this->jobs_table, $data, array(
 			'id' => $job->id(),
 		) );
+	}
+
+	/**
+	 * Push a job onto the failure queue.
+	 *
+	 * @param Job $job
+	 */
+	public function failure( $job ) {
+		$this->database->insert( $this->failures_table, array(
+			'job'       => serialize( $job ),
+			'failed_at' => $this->datetime(),
+		) );
+
+		$this->delete( $job );
 	}
 
 	/**
@@ -123,7 +137,7 @@ class DatabaseQueue extends Queue {
 			'reserved_at' => $this->datetime(),
 		);
 
-		$this->database->update( $this->table, $data, array(
+		$this->database->update( $this->jobs_table, $data, array(
 			'id' => $job->id(),
 		) );
 	}
@@ -135,7 +149,7 @@ class DatabaseQueue extends Queue {
 		$expired = $this->datetime( -300 );
 
 		$sql = $this->database->prepare( "
-				UPDATE {$this->table}
+				UPDATE {$this->jobs_table}
 				SET attempts = attempts + 1, reserved_at = NULL
 				WHERE reserved_at <= %s", $expired );
 

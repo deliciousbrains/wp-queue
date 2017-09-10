@@ -36,6 +36,13 @@ abstract class Queue {
 	abstract public function release( $job );
 
 	/**
+	 * Push a job onto the failure queue.
+	 *
+	 * @param Job $job
+	 */
+	abstract public function failure( $job );
+
+	/**
 	 * Reserve a job in the queue.
 	 *
 	 * @param Job $job
