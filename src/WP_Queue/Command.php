@@ -33,4 +33,19 @@ class Command extends WP_CLI_Command {
 		WP_CLI::success( "Table {$wpdb->prefix}jobs created." );
 	}
 
+	/**
+	 * Run a single job.
+	 */
+	public function run() {
+		global $wpdb;
+		$queue  = new DatabaseQueue( $wpdb );
+		$worker = new Worker( $queue );
+
+		if ( $worker->process() ) {
+			WP_CLI::success( 'Job processed.' );
+		} else {
+			WP_CLI::success( 'No jobs to process.' );
+		}
+	}
+
 }

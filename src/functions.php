@@ -8,17 +8,14 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	/**
 	 * Queue single job.
 	 *
-	 * @param Job        $job
-	 * @param int                  $delay Delay in seconds.
-	 * @param Queue|null $queue
+	 * @param Job $job
+	 * @param int $delay Delay in seconds.
 	 *
 	 * @return bool|int
 	 */
-	function wp_queue( Job $job, $delay = 0, Queue $queue = null ) {
-		if ( is_null( $queue ) ) {
-			global $wpdb;
-			$queue = new DatabaseQueue( $wpdb );
-		}
+	function wp_queue( Job $job, $delay = 0 ) {
+		global $wpdb;
+		$queue = new DatabaseQueue( $wpdb );
 
 		return $queue->push( $job, $delay );
 	}

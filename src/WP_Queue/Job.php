@@ -9,27 +9,32 @@ abstract class Job {
 	/**
 	 * @var int
 	 */
-	protected $id;
+	private $id;
 
 	/**
 	 * @var int
 	 */
-	protected $attempts;
+	private $attempts;
 
 	/**
 	 * @var Carbon
 	 */
-	protected $reserved_at;
+	private $reserved_at;
 
 	/**
 	 * @var Carbon
 	 */
-	protected $available_at;
+	private $available_at;
 
 	/**
 	 * @var Carbon
 	 */
-	protected $created_at;
+	private $created_at;
+
+	/**
+	 * @var bool
+	 */
+	private $released = false;
 
 	/**
 	 *
@@ -127,6 +132,22 @@ abstract class Job {
 	}
 
 	/**
+	 * Flag job to be released back onto the queue.
+	 */
+	public function release() {
+		$this->released = true;
+	}
+
+	/**
+	 * Should the job be released back onto the queue?
+	 *
+	 * @return bool
+	 */
+	public function released() {
+		return $this->released;
+	}
+
+	/**
 	 * Determine which properties should be serialized.
 	 *
 	 * @return array
@@ -134,7 +155,7 @@ abstract class Job {
 	public function __sleep() {
 		$props = get_object_vars( $this );
 
-		unset( $props['id'], $props['attempts'], $props['reserved_at'], $props['available_at'], $props['created_at'] );
+		unset( $props['id'], $props['attempts'], $props['reserved_at'], $props['available_at'], $props['created_at'], $props['released'] );
 
 		return array_keys( $props );
 	}

@@ -67,23 +67,56 @@ class DatabaseQueue extends Queue {
 			return false;
 		}
 
-		$this->reserve( $raw_job->id );
+		$job = $this->vitalize_job( $raw_job );
 
-		return $this->vitalize_job( $raw_job );
+		$this->reserve( $job );
+
+		return $job;
+	}
+
+	/**
+	 * Delete a job from the queue.
+	 *
+	 * @param Job $job
+	 */
+	public function delete( $job ) {
+		$where = array(
+			'id' => $job->id(),
+		);
+
+		$this->database->delete( $this->table, $where );
+	}
+
+	/**
+	 * Release a job back onto the queue.
+	 *
+	 * @param Job $job
+	 */
+	public function release( $job ) {
+		$data = array(
+			'job'          => serialize( $job ),
+			'attempts'     => $job->attempts() + 1,
+			'reserved_at'  => null,
+			'available_at' => $this->datetime(),
+		);
+
+		$this->database->update( $this->table, $data, array(
+			'id' => $job->id(),
+		) );
 	}
 
 	/**
 	 * Reserve a job in the queue.
 	 *
-	 * @param int $id
+	 * @param Job $job
 	 */
-	protected function reserve( $id ) {
+	protected function reserve( $job ) {
 		$data = array(
 			'reserved_at' => $this->datetime(),
 		);
 
 		$this->database->update( $this->table, $data, array(
-			'id' => $id,
+			'id' => $job->id(),
 		) );
 	}
 

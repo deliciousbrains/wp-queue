@@ -22,11 +22,25 @@ abstract class Queue {
 	abstract public function pop();
 
 	/**
+	 * Delete a job from the queue.
+	 *
+	 * @param Job $job
+	 */
+	abstract public function delete( $job );
+
+	/**
+	 * Release a job back onto the queue.
+	 *
+	 * @param Job $job
+	 */
+	abstract public function release( $job );
+
+	/**
 	 * Reserve a job in the queue.
 	 *
-	 * @param int $id
+	 * @param Job $job
 	 */
-	abstract protected function reserve( $id );
+	abstract protected function reserve( $job );
 
 	/**
 	 * Vitalize Job with latest data.
