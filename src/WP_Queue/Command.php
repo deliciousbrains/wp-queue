@@ -48,4 +48,21 @@ class Command extends WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Start a queue worker.
+	 */
+	public function work() {
+		global $wpdb;
+		$queue  = new DatabaseQueue( $wpdb );
+		$worker = new Worker( $queue );
+
+		while ( true ) {
+			if ( $worker->process() ) {
+				WP_CLI::success( 'Job processed.' );
+			} else {
+				sleep( 5 );
+			}
+		}
+	}
+
 }

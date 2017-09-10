@@ -20,6 +20,11 @@ class Worker {
 		$this->queue = $queue;
 	}
 
+	/**
+	 * Process a job on the queue.
+	 *
+	 * @return bool
+	 */
 	public function process() {
 		$job = $this->queue->pop();
 
