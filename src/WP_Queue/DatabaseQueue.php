@@ -62,6 +62,7 @@ class DatabaseQueue extends Queue {
 			WHERE reserved_at IS NULL
 			AND available_at <= %s
 			ORDER BY available_at
+			LIMIT 1
 		", $this->datetime() );
 
 		$raw_job = $this->database->get_row( $sql );
@@ -100,7 +101,6 @@ class DatabaseQueue extends Queue {
 			'job'          => serialize( $job ),
 			'attempts'     => $job->attempts() + 1,
 			'reserved_at'  => null,
-			'available_at' => $this->datetime(),
 		);
 
 		$this->database->update( $this->table, $data, array(
