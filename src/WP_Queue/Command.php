@@ -46,11 +46,23 @@ class Command extends WP_CLI_Command {
 
 	/**
 	 * Run a single job.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--attempts=<attempts>]
+	 * : The number of times to attempt a job.
+	 * ---
+	 * default: 3
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp queue run --attempts=3
 	 */
-	public function run() {
+	public function run( $args, $assoc_args ) {
 		global $wpdb;
 		$queue  = new DatabaseQueue( $wpdb );
-		$worker = new Worker( $queue );
+		$worker = new Worker( $queue, $assoc_args['attempts'] );
 
 		if ( $worker->process() ) {
 			WP_CLI::success( 'Job processed.' );
@@ -61,11 +73,23 @@ class Command extends WP_CLI_Command {
 
 	/**
 	 * Start a queue worker.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--attempts=<attempts>]
+	 * : The number of times to attempt a job.
+	 * ---
+	 * default: 3
+	 * ---
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp queue work --attempts=3
 	 */
-	public function work() {
+	public function work( $args, $assoc_args ) {
 		global $wpdb;
 		$queue  = new DatabaseQueue( $wpdb );
-		$worker = new Worker( $queue );
+		$worker = new Worker( $queue, $assoc_args['attempts'] );
 
 		while ( true ) {
 			if ( $worker->process() ) {
