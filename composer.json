@@ -1,0 +1,20 @@
+{
+    "name": "A5hleyRich/wp-queue",
+    "authors": [
+        {
+            "name": "Ashley Rich",
+            "email": "hello@ashleyrich.com"
+        }
+    ],
+    "require": {
+        "nesbot/carbon": "^1.22"
+    },
+    "autoload": {
+        "psr-4": {
+            "WP_Queue\\": "src\\WP_Queue"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}
