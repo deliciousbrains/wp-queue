@@ -1,6 +1,6 @@
 <?php
 
-use WP_Queue\DatabaseQueue;
+use WP_Queue\Connections\DatabaseConnection;
 use WP_Queue\Job;
 
 if ( ! function_exists( 'wp_queue' ) ) {
@@ -14,9 +14,12 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	 */
 	function wp_queue( Job $job, $delay = 0 ) {
 		global $wpdb;
-		$queue = new DatabaseQueue( $wpdb );
+		$queue  = new DatabaseConnection( $wpdb );
+		$result = $queue->push( $job, $delay );
 
-		return $queue->push( $job, $delay );
+		do_action( 'wp_queue_push', $job, $delay );
+
+		return $result;
 	}
 }
 

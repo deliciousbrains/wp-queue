@@ -3,13 +3,14 @@
 namespace WP_Queue;
 
 use Exception;
+use WP_Queue\Connections\ConnectionInterface;
 
 class Worker {
 
 	/**
-	 * @var Queue
+	 * @var ConnectionInterface
 	 */
-	private $queue;
+	private $connection;
 
 	/**
 	 * @var int
@@ -19,12 +20,12 @@ class Worker {
 	/**
 	 * Worker constructor.
 	 *
-	 * @param Queue $queue
-	 * @param int   $attempts
+	 * @param ConnectionInterface $connection
+	 * @param int                 $attempts
 	 */
-	public function __construct( $queue, $attempts = 3 ) {
-		$this->queue    = $queue;
-		$this->attempts = $attempts;
+	public function __construct( $connection, $attempts = 3 ) {
+		$this->connection = $connection;
+		$this->attempts   = $attempts;
 	}
 
 	/**
@@ -33,7 +34,7 @@ class Worker {
 	 * @return bool
 	 */
 	public function process() {
-		$job = $this->queue->pop();
+		$job = $this->connection->pop();
 
 		if ( ! $job ) {
 			return false;
@@ -46,11 +47,11 @@ class Worker {
 		}
 
 		if ( $job->released() && $job->attempts() >= $this->attempts ) {
-			$this->queue->failure( $job );
+			$this->connection->failure( $job );
 		} else if ( $job->released() ) {
-			$this->queue->release( $job );
+			$this->connection->release( $job );
 		} else {
-			$this->queue->delete( $job );
+			$this->connection->delete( $job );
 		}
 
 		return true;

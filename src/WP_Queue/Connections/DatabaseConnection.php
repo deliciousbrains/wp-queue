@@ -1,10 +1,11 @@
 <?php
 
-namespace WP_Queue;
+namespace WP_Queue\Connections;
 
 use Carbon\Carbon;
+use WP_Queue\Job;
 
-class DatabaseQueue extends Queue {
+class DatabaseConnection implements ConnectionInterface {
 
 	/**
 	 * @var wpdb
@@ -129,6 +130,28 @@ class DatabaseQueue extends Queue {
 	}
 
 	/**
+	 * Get total jobs in the queue.
+	 *
+	 * @return int
+	 */
+	public function jobs() {
+		$sql = "SELECT COUNT(*) FROM {$this->jobs_table}";
+		
+		return (int) $this->database->get_var( $sql );
+	}
+
+	/**
+	 * Get total jobs in the failures queue.
+	 *
+	 * @return int
+	 */
+	public function failed_jobs() {
+		$sql = "SELECT COUNT(*) FROM {$this->failures_table}";
+
+		return (int) $this->database->get_var( $sql );
+	}
+
+	/**
 	 * Reserve a job in the queue.
 	 *
 	 * @param Job $job
@@ -174,28 +197,6 @@ class DatabaseQueue extends Queue {
 		$job->set_created_at( new Carbon( $raw_job->created_at ) );
 
 		return $job;
-	}
-
-	/**
-	 * Get total jobs in the queue.
-	 *
-	 * @return int
-	 */
-	public function jobs() {
-		$sql = "SELECT COUNT(*) FROM {$this->jobs_table}";
-		
-		return (int) $this->database->get_var( $sql );
-	}
-
-	/**
-	 * Get total jobs in the failures queue.
-	 *
-	 * @return int
-	 */
-	public function failed_jobs() {
-		$sql = "SELECT COUNT(*) FROM {$this->failures_table}";
-
-		return (int) $this->database->get_var( $sql );
 	}
 
 	/**

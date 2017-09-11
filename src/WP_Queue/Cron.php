@@ -2,6 +2,8 @@
 
 namespace WP_Queue;
 
+use WP_Queue\Connections\DatabaseConnection;
+
 class Cron {
 
 	/**
@@ -69,9 +71,9 @@ class Cron {
 	 */
 	public function cron_worker() {
 		global $wpdb;
-		$queue    = new DatabaseQueue( $wpdb );
-		$attempts = add_filter( 'wp_queue_cron_attempts', 3 );
-		$worker   = new Worker( $queue, $attempts );
+		$connection = new DatabaseConnection( $wpdb );
+		$attempts   = add_filter( 'wp_queue_cron_attempts', 3 );
+		$worker     = new Worker( $connection, $attempts );
 
 		$this->start_time = time();
 
