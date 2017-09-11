@@ -40,10 +40,12 @@ class Worker {
 			return false;
 		}
 
+		$exception = null;
+
 		try {
 			$job->handle();
-		} catch ( Exception $e ) {
-			$job->release( $e );
+		} catch ( Exception $exception ) {
+			$job->release();
 		}
 
 		if ( $job->attempts() >= $this->attempts ) {
@@ -51,7 +53,7 @@ class Worker {
 		}
 
 		if ( $job->failed() ) {
-			$this->connection->failure( $job );
+			$this->connection->failure( $job, $exception );
 		} else if ( $job->released() ) {
 			$this->connection->release( $job );
 		} else {

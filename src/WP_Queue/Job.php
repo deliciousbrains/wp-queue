@@ -43,11 +43,6 @@ abstract class Job {
 	private $failed = false;
 
 	/**
-	 * @var Exception
-	 */
-	private $exception;
-
-	/**
 	 * Handle job logic.
 	 */
 	abstract public function handle();
@@ -144,16 +139,10 @@ abstract class Job {
 
 	/**
 	 * Flag job as released.
-	 *
-	 * @param Exception $exception
 	 */
-	public function release( Exception $exception = null ) {
+	public function release() {
 		$this->released = true;
 		$this->attempts += 1;
-
-		if ( ! is_null( $exception ) ) {
-			$this->exception = $exception;
-		}
 	}
 
 	/**
@@ -182,23 +171,6 @@ abstract class Job {
 	}
 
 	/**
-	 * Get job error message.
-	 *
-	 * @return null|string
-	 */
-	public function error() {
-		if ( is_null( $this->exception ) ) {
-			return null;
-		}
-
-		$class   = get_class( $this->exception );
-		$message = $this->exception->getMessage();
-		$code    = $this->exception->getCode();
-
-		return "{$class}: {$message} (#{$code})";
-	}
-
-	/**
 	 * Determine which properties should be serialized.
 	 *
 	 * @return array
@@ -213,7 +185,6 @@ abstract class Job {
 			'created_at',
 			'released',
 			'failed',
-			'exception',
 		);
 
 		foreach ( $excluded_props as $prop ) {

@@ -3,6 +3,7 @@
 namespace WP_Queue\Connections;
 
 use Carbon\Carbon;
+use Exception;
 use WP_Queue\Job;
 
 class DatabaseConnection implements ConnectionInterface {
@@ -117,12 +118,13 @@ class DatabaseConnection implements ConnectionInterface {
 	/**
 	 * Push a job onto the failure queue.
 	 *
-	 * @param Job $job
+	 * @param Job       $job
+	 * @param Exception $exception
 	 */
-	public function failure( $job ) {
+	public function failure( $job, Exception $exception ) {
 		$this->database->insert( $this->failures_table, array(
 			'job'       => serialize( $job ),
-			'error'     => $job->error(),
+			'error'     => $this->format_exception( $exception ),
 			'failed_at' => $this->datetime(),
 		) );
 
@@ -210,6 +212,23 @@ class DatabaseConnection implements ConnectionInterface {
 		$timestamp = time() + $offset;
 
 		return gmdate( 'Y-m-d H:i:s', $timestamp );
+	}
+
+	/**
+	 * Format an exception error string.
+	 *
+	 * @param Exception $exception
+	 *
+	 * @return null|string
+	 */
+	protected function format_exception( Exception $exception ) {
+		if ( is_null( $exception ) ) {
+			return null;
+		}
+
+		$class = get_class( $exception );
+
+		return "{$class}: {$exception->getMessage()} (#{$exception->getCode()})";
 	}
 
 }

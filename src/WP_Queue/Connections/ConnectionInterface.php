@@ -2,6 +2,7 @@
 
 namespace WP_Queue\Connections;
 
+use Exception;
 use WP_Queue\Job;
 
 interface ConnectionInterface {
@@ -40,9 +41,12 @@ interface ConnectionInterface {
 	/**
 	 * Push a job onto the failure queue.
 	 *
-	 * @param Job $job
+	 * @param Job       $job
+	 * @param Exception $exception
+	 *
+	 * @return
 	 */
-	public function failure( $job );
+	public function failure( $job, Exception $exception );
 
 	/**
 	 * Get total jobs in the queue.
