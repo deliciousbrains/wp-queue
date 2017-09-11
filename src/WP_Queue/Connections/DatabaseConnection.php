@@ -105,7 +105,7 @@ class DatabaseConnection implements ConnectionInterface {
 	public function release( $job ) {
 		$data = array(
 			'job'         => serialize( $job ),
-			'attempts'    => $job->attempts() + 1,
+			'attempts'    => $job->attempts(),
 			'reserved_at' => null,
 		);
 

@@ -46,7 +46,11 @@ class Worker {
 			$job->release( $e );
 		}
 
-		if ( $job->released() && $job->attempts() >= $this->attempts ) {
+		if ( $job->attempts() >= $this->attempts ) {
+			$job->fail();
+		}
+
+		if ( $job->failed() ) {
 			$this->connection->failure( $job );
 		} else if ( $job->released() ) {
 			$this->connection->release( $job );

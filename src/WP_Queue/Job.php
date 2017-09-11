@@ -38,6 +38,11 @@ abstract class Job {
 	private $released = false;
 
 	/**
+	 * @var bool
+	 */
+	private $failed = false;
+
+	/**
 	 * @var Exception
 	 */
 	private $exception;
@@ -138,12 +143,13 @@ abstract class Job {
 	}
 
 	/**
-	 * Flag job to be released back onto the queue.
+	 * Flag job as released.
 	 *
 	 * @param Exception $exception
 	 */
 	public function release( Exception $exception = null ) {
 		$this->released = true;
+		$this->attempts += 1;
 
 		if ( ! is_null( $exception ) ) {
 			$this->exception = $exception;
@@ -157,6 +163,22 @@ abstract class Job {
 	 */
 	public function released() {
 		return $this->released;
+	}
+
+	/**
+	 * Flag job as failed.
+	 */
+	public function fail() {
+		$this->failed = true;
+	}
+
+	/**
+	 * Has the job failed?
+	 *
+	 * @return bool
+	 */
+	public function failed() {
+		return $this->failed;
 	}
 
 	/**
@@ -182,11 +204,23 @@ abstract class Job {
 	 * @return array
 	 */
 	public function __sleep() {
-		$props = get_object_vars( $this );
+		$object_props   = get_object_vars( $this );
+		$excluded_props = array(
+			'id',
+			'attempts',
+			'reserved_at',
+			'available_at',
+			'created_at',
+			'released',
+			'failed',
+			'exception',
+		);
 
-		unset( $props['id'], $props['attempts'], $props['reserved_at'], $props['available_at'], $props['created_at'], $props['released'], $props['exception'] );
+		foreach ( $excluded_props as $prop ) {
+			unset( $object_props[ $prop ] );
+		}
 
-		return array_keys( $props );
+		return array_keys( $object_props );
 	}
 
 }
