@@ -101,4 +101,15 @@ class Command extends WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Show queue status.
+	 */
+	public function status() {
+		global $wpdb;
+		$queue = new DatabaseQueue( $wpdb );
+
+		WP_CLI::log( $queue->jobs() . ' jobs in the queue' );
+		WP_CLI::log( $queue->failed_jobs() . ' failed jobs in the queue' );
+	}
+
 }

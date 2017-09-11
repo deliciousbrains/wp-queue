@@ -58,4 +58,18 @@ abstract class Queue {
 	 */
 	abstract protected function vitalize_job( $raw_job );
 
+	/**
+	 * Get total jobs in the queue.
+	 *
+	 * @return int
+	 */
+	abstract public function jobs();
+
+	/**
+	 * Get total jobs in the failures queue.
+	 *
+	 * @return int
+	 */
+	abstract public function failed_jobs();
+
 }

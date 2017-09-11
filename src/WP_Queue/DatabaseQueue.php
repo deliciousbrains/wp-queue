@@ -103,9 +103,9 @@ class DatabaseQueue extends Queue {
 	 */
 	public function release( $job ) {
 		$data = array(
-			'job'          => serialize( $job ),
-			'attempts'     => $job->attempts() + 1,
-			'reserved_at'  => null,
+			'job'         => serialize( $job ),
+			'attempts'    => $job->attempts() + 1,
+			'reserved_at' => null,
 		);
 
 		$this->database->update( $this->jobs_table, $data, array(
@@ -174,6 +174,28 @@ class DatabaseQueue extends Queue {
 		$job->set_created_at( new Carbon( $raw_job->created_at ) );
 
 		return $job;
+	}
+
+	/**
+	 * Get total jobs in the queue.
+	 *
+	 * @return int
+	 */
+	public function jobs() {
+		$sql = "SELECT COUNT(*) FROM {$this->jobs_table}";
+		
+		return (int) $this->database->get_var( $sql );
+	}
+
+	/**
+	 * Get total jobs in the failures queue.
+	 *
+	 * @return int
+	 */
+	public function failed_jobs() {
+		$sql = "SELECT COUNT(*) FROM {$this->failures_table}";
+
+		return (int) $this->database->get_var( $sql );
 	}
 
 	/**
