@@ -3,6 +3,7 @@
 namespace WP_Queue;
 
 use Carbon\Carbon;
+use Exception;
 
 abstract class Job {
 
@@ -35,6 +36,11 @@ abstract class Job {
 	 * @var bool
 	 */
 	private $released = false;
+
+	/**
+	 * @var Exception
+	 */
+	private $exception;
 
 	/**
 	 * Handle job logic.
@@ -133,9 +139,15 @@ abstract class Job {
 
 	/**
 	 * Flag job to be released back onto the queue.
+	 *
+	 * @param Exception $exception
 	 */
-	public function release() {
+	public function release( Exception $exception = null ) {
 		$this->released = true;
+
+		if ( ! is_null( $exception ) ) {
+			$this->exception = $exception;
+		}
 	}
 
 	/**
@@ -148,6 +160,23 @@ abstract class Job {
 	}
 
 	/**
+	 * Get job error message.
+	 *
+	 * @return null|string
+	 */
+	public function error() {
+		if ( is_null( $this->exception ) ) {
+			return null;
+		}
+
+		$class   = get_class( $this->exception );
+		$message = $this->exception->getMessage();
+		$code    = $this->exception->getCode();
+
+		return "{$class}: {$message} (#{$code})";
+	}
+
+	/**
 	 * Determine which properties should be serialized.
 	 *
 	 * @return array
@@ -155,7 +184,7 @@ abstract class Job {
 	public function __sleep() {
 		$props = get_object_vars( $this );
 
-		unset( $props['id'], $props['attempts'], $props['reserved_at'], $props['available_at'], $props['created_at'], $props['released'] );
+		unset( $props['id'], $props['attempts'], $props['reserved_at'], $props['available_at'], $props['created_at'], $props['released'], $props['exception'] );
 
 		return array_keys( $props );
 	}

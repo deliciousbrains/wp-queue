@@ -121,6 +121,7 @@ class DatabaseQueue extends Queue {
 	public function failure( $job ) {
 		$this->database->insert( $this->failures_table, array(
 			'job'       => serialize( $job ),
+			'error'     => $job->error(),
 			'failed_at' => $this->datetime(),
 		) );
 

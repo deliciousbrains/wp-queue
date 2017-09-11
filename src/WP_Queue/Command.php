@@ -35,6 +35,7 @@ class Command extends WP_CLI_Command {
 		$sql = "CREATE TABLE {$wpdb->prefix}queue_failures (
 				id bigint(20) NOT NULL AUTO_INCREMENT,
                 job longtext NOT NULL,
+                error text DEFAULT NULL,
                 failed_at datetime NOT NULL,
                 PRIMARY KEY  (id)
 				) $charset_collate;";

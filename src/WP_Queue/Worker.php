@@ -42,7 +42,7 @@ class Worker {
 		try {
 			$job->handle();
 		} catch ( Exception $e ) {
-			$job->release();
+			$job->release( $e );
 		}
 
 		if ( $job->released() && $job->attempts() >= $this->attempts ) {
