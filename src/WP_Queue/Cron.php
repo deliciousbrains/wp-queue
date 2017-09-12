@@ -2,14 +2,12 @@
 
 namespace WP_Queue;
 
-use WP_Queue\Connections\DatabaseConnection;
-
 class Cron {
 
 	/**
-	 * @var Cron
+	 * @var Worker
 	 */
-	protected static $instance;
+	protected $worker;
 
 	/**
 	 * Timestamp of when processing the queue started.
@@ -19,32 +17,24 @@ class Cron {
 	protected $start_time;
 
 	/**
-	 * Make this class a singleton.
+	 * Cron constructor.
 	 *
-	 * Use this instead of __construct().
-	 *
-	 * @return Cron
+	 * @param Worker $worker
 	 */
-	public static function get_instance() {
-		if ( ! isset( static::$instance ) && ! ( self::$instance instanceof Cron ) ) {
-			static::$instance = new Cron();
-		}
-
-		static::$instance->init();
-
-		return static::$instance;
+	public function __construct( $worker ) {
+		$this->worker = $worker;
 	}
 
 	/**
 	 * Init cron class.
 	 */
-	protected function init() {
+	public function init() {
 		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
-		add_action( 'wp_queue_cron_worker', array( $this, 'cron_worker' ) );
+		add_action( 'wp_queue_worker', array( $this, 'cron_worker' ) );
 
-		if ( ! wp_next_scheduled( 'wp_queue_cron_worker' ) ) {
+		if ( ! wp_next_scheduled( 'wp_queue_worker' ) ) {
 			// Schedule health check
-			wp_schedule_event( time(), 'wp_queue_cron_interval', 'wp_queue_cron_worker' );
+			wp_schedule_event( time(), 'wp_queue_cron_interval', 'wp_queue_worker' );
 		}
 	}
 
@@ -70,15 +60,10 @@ class Cron {
 	 * Process any jobs in the queue.
 	 */
 	public function cron_worker() {
-		global $wpdb;
-		$connection = new DatabaseConnection( $wpdb );
-		$attempts   = add_filter( 'wp_queue_cron_attempts', 3 );
-		$worker     = new Worker( $connection, $attempts );
-
 		$this->start_time = time();
 
 		while ( ! $this->time_exceeded() && ! $this->memory_exceeded() ) {
-			if ( ! $worker->process() ) {
+			if ( ! $this->worker->process() ) {
 				break;
 			}
 		}
@@ -142,20 +127,4 @@ class Cron {
 
 		return apply_filters( 'wp_queue_cron_time_exceeded', $return );
 	}
-
-	/**
-	 * Protected constructor to prevent creating a new instance of the
-	 * class via the `new` operator from outside of this class.
-	 */
-	protected function __construct() {}
-
-	/**
-	 * As this class is a singleton it should not be clone-able.
-	 */
-	protected function __clone() {}
-
-	/**
-	 * As this class is a singleton it should not be able to be unserialized.
-	 */
-	protected function __wakeup() {}
 }

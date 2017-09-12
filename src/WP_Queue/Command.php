@@ -4,7 +4,6 @@ namespace WP_Queue;
 
 use WP_CLI;
 use WP_CLI_Command;
-use WP_Queue\Connections\DatabaseConnection;
 
 class Command extends WP_CLI_Command {
 
@@ -62,9 +61,7 @@ class Command extends WP_CLI_Command {
 	 *     wp queue run --attempts=3
 	 */
 	public function run( $args, $assoc_args ) {
-		global $wpdb;
-		$connection = new DatabaseConnection( $wpdb );
-		$worker     = new Worker( $connection, $assoc_args['attempts'] );
+		$worker = Queue::get_instance()->worker( $assoc_args['attempts'] );
 
 		if ( $worker->process() ) {
 			WP_CLI::success( 'Job processed.' );
@@ -89,9 +86,7 @@ class Command extends WP_CLI_Command {
 	 *     wp queue work --attempts=3
 	 */
 	public function work( $args, $assoc_args ) {
-		global $wpdb;
-		$connection = new DatabaseConnection( $wpdb );
-		$worker     = new Worker( $connection, $assoc_args['attempts'] );
+		$worker = Queue::get_instance()->worker( $assoc_args['attempts'] );
 
 		while ( true ) {
 			if ( $worker->process() ) {
@@ -106,8 +101,7 @@ class Command extends WP_CLI_Command {
 	 * Show queue status.
 	 */
 	public function status() {
-		global $wpdb;
-		$queue = new DatabaseConnection( $wpdb );
+		$queue = Queue::get_instance()->connection();
 
 		WP_CLI::log( $queue->jobs() . ' jobs in the queue' );
 		WP_CLI::log( $queue->failed_jobs() . ' failed jobs in the queue' );
