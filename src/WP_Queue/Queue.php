@@ -59,6 +59,8 @@ class Queue {
 		}
 
 		WP_CLI::add_command( 'queue', '\WP_Queue\Command' );
+
+		return $this;
 	}
 
 	/**
@@ -69,6 +71,8 @@ class Queue {
 		$cron     = new Cron( $this->worker( $attempts ) );
 
 		$cron->init();
+
+		return $this;
 	}
 
 	/**
