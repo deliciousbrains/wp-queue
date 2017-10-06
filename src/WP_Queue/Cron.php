@@ -26,6 +26,19 @@ class Cron {
 	}
 
 	/**
+	 * Is the cron queue worker enabled?
+	 *
+	 * @return bool
+	 */
+	public function is_enabled() {
+		if ( defined( 'DISABLE_WP_QUEUE_CRON' ) && DISABLE_WP_QUEUE_CRON ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Init cron class.
 	 */
 	public function init() {
