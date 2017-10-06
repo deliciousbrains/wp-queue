@@ -1,3 +1,7 @@
+[![Total Downloads](https://poser.pugx.org/a5hleyrich/wp-queue/downloads)](https://packagist.org/packages/a5hleyrich/wp-queue)
+[![Latest Stable Version](https://poser.pugx.org/a5hleyrich/wp-queue/v/stable)](https://packagist.org/packages/a5hleyrich/wp-queue)
+[![License](https://poser.pugx.org/a5hleyrich/wp-queue/license)](https://packagist.org/packages/a5hleyrich/wp-queue)
+
 ## Prerequisites
 
 WP_Queue requires PHP __5.3+__.
@@ -90,3 +94,7 @@ You can also specify the number of times a job should be attempted before being 
 ```
 wp_queue()->cron( 3 );
 ```
+
+## License
+
+WP Queue is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

@@ -2,6 +2,7 @@
     "name": "a5hleyrich/wp-queue",
     "description": "WordPress job queues",
     "keywords": ["wordpress","queue","job"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Ashley Rich",
