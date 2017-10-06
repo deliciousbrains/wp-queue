@@ -10,12 +10,12 @@ class Worker {
 	/**
 	 * @var ConnectionInterface
 	 */
-	private $connection;
+	protected $connection;
 
 	/**
 	 * @var int
 	 */
-	private $attempts;
+	protected $attempts;
 
 	/**
 	 * Worker constructor.

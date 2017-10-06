@@ -1,36 +1,22 @@
 <?php
 
-use WP_Queue\Job;
 use WP_Queue\Queue;
 
 if ( ! function_exists( 'wp_queue' ) ) {
 	/**
-	 * Queue single job.
+	 * Return Queue instance.
 	 *
-	 * @param Job $job
-	 * @param int $delay Delay in seconds.
-	 *
-	 * @return bool|int
+	 * @return Queue
 	 */
-	function wp_queue( Job $job, $delay = 0 ) {
-		$result = Queue::get_instance()->connection()->push( $job, $delay );
+	function wp_queue() {
+		static $queue = null;
 
-		do_action( 'wp_queue_push', $job, $delay );
-
-		return $result;
-	}
-}
-
-if ( ! function_exists( 'wp_queue_batch' ) ) {
-	/**
-	 * Queue multiple jobs.
-	 *
-	 * @param array $jobs  Array of \WP_Queue\Job jobs.
-	 * @param int   $delay Delay in seconds.
-	 */
-	function wp_queue_batch( $jobs, $delay = 0 ) {
-		foreach ( $jobs as $job ) {
-			wp_queue( $job, $delay );
+		if ( is_null( $queue ) ) {
+			global $wpdb;
+			$connection = apply_filters( 'wp_queue_connection', new WP_Queue\Connections\DatabaseConnection( $wpdb ) );
+			$queue      = new WP_Queue\Queue( $connection );
 		}
+
+		return $queue;
 	}
 }
