@@ -5,6 +5,11 @@ namespace WP_Queue;
 class Cron {
 
 	/**
+	 * @var string
+	 */
+	protected $identifier;
+
+	/**
 	 * @var Worker
 	 */
 	protected $worker;
@@ -19,10 +24,12 @@ class Cron {
 	/**
 	 * Cron constructor.
 	 *
+	 * @param string $identifier
 	 * @param Worker $worker
 	 */
-	public function __construct( $worker ) {
-		$this->worker = $worker;
+	public function __construct( $identifier, $worker ) {
+		$this->identifier = $identifier;
+		$this->worker     = $worker;
 	}
 
 	/**
@@ -43,11 +50,11 @@ class Cron {
 	 */
 	public function init() {
 		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
-		add_action( 'wp_queue_worker', array( $this, 'cron_worker' ) );
+		add_action( "wp_queue_worker_{$this->identifier}", array( $this, 'cron_worker' ) );
 
-		if ( ! wp_next_scheduled( 'wp_queue_worker' ) ) {
+		if ( ! wp_next_scheduled( "wp_queue_worker_{$this->identifier}" ) ) {
 			// Schedule health check
-			wp_schedule_event( time(), 'wp_queue_cron_interval', 'wp_queue_worker' );
+			wp_schedule_event( time(), 'wp_queue_cron_interval', "wp_queue_worker_{$this->identifier}" );
 		}
 	}
 
