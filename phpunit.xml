@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<phpunit colors="true" backupGlobals="false" bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="wp-queue">
+            <directory prefix="Test" suffix=".php">./tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
