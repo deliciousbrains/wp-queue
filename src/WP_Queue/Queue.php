@@ -21,22 +21,6 @@ class Queue {
 	}
 
 	/**
-	 * Init Queue class.
-	 */
-	public function init() {
-		if ( method_exists( $this->connection, 'init' ) ) {
-			$this->connection->init();
-		}
-
-		$attempts = add_filter( 'wp_queue_cron_attempts', 3 );
-		$cron     = new Cron( $this->worker( $attempts ) );
-
-		if ( $cron->is_enabled() ) {
-			$cron->init();
-		}
-	}
-
-	/**
 	 * Push a job onto the queue;
 	 *
 	 * @param Job $job
