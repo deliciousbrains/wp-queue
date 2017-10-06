@@ -35,6 +35,55 @@ class DatabaseConnection implements ConnectionInterface {
 	}
 
 	/**
+	 * Init DatabaseConnection class.
+	 */
+	public function init() {
+		if ( get_site_option( 'wp_queue_tables_installed' ) ) {
+			return;
+		}
+
+		$this->install_tables();
+
+		if ( is_multisite() ) {
+			add_site_option( 'wp_queue_tables_installed', true );
+		} else {
+			add_option( 'wp_queue_tables_installed', true );
+		}
+	}
+
+	/**
+	 * Install required database tables.
+	 */
+	protected function install_tables() {
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
+		$this->database->hide_errors();
+		$charset_collate = $this->database->get_charset_collate();
+
+		$sql = "CREATE TABLE {$this->database->prefix}queue_jobs (
+				id bigint(20) NOT NULL AUTO_INCREMENT,
+                job longtext NOT NULL,
+                attempts tinyint(3) NOT NULL DEFAULT 0,
+                reserved_at datetime DEFAULT NULL,
+                available_at datetime NOT NULL,
+                created_at datetime NOT NULL,
+                PRIMARY KEY  (id)
+				) $charset_collate;";
+
+		dbDelta( $sql );
+
+		$sql = "CREATE TABLE {$this->database->prefix}queue_failures (
+				id bigint(20) NOT NULL AUTO_INCREMENT,
+                job longtext NOT NULL,
+                error text DEFAULT NULL,
+                failed_at datetime NOT NULL,
+                PRIMARY KEY  (id)
+				) $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
+	/**
 	 * Push a job onto the queue.
 	 *
 	 * @param Job $job

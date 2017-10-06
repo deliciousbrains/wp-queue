@@ -15,6 +15,8 @@ if ( ! function_exists( 'wp_queue' ) ) {
 			global $wpdb;
 			$connection = apply_filters( 'wp_queue_connection', new WP_Queue\Connections\DatabaseConnection( $wpdb ) );
 			$queue      = new WP_Queue\Queue( $connection );
+
+			$queue->init();
 		}
 
 		return $queue;

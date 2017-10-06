@@ -21,6 +21,15 @@ class Queue {
 	}
 
 	/**
+	 * Init Queue class.
+	 */
+	public function init() {
+		if ( method_exists( $this->connection, 'init' ) ) {
+			$this->connection->init();
+		}
+	}
+
+	/**
 	 * Push a job onto the queue;
 	 *
 	 * @param Job $job
