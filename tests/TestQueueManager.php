@@ -11,7 +11,7 @@ class TestQueueManager extends TestCase {
 		WP_Mock::setUp();
 
 		global $wpdb;
-		$wpdb = Mockery::mock( 'WPDB' );
+		$wpdb         = Mockery::mock( 'WPDB' );
 		$wpdb->prefix = 'wp_';
 	}
 
@@ -27,7 +27,7 @@ class TestQueueManager extends TestCase {
 	}
 
 	public function test_resolve_exception() {
-		$this->setExpectedException( ConnectionNotFoundException::class);
+		$this->expectException( ConnectionNotFoundException::class );
 		QueueManager::resolve( 'wibble' );
 	}
 }
