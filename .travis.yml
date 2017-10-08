@@ -10,4 +10,4 @@ php:
   - 7.0
 
 install:
-  - composer install
+  - composer install --prefer-dist --no-interaction --no-suggest
