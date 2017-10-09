@@ -95,9 +95,9 @@ abstract class Job {
 	/**
 	 * Set reserved at date.
 	 *
-	 * @param Carbon $reserved_at
+	 * @param null|Carbon $reserved_at
 	 */
-	public function set_reserved_at( Carbon $reserved_at ) {
+	public function set_reserved_at( $reserved_at ) {
 		$this->reserved_at = $reserved_at;
 	}
 

@@ -89,30 +89,43 @@ class DatabaseConnection implements ConnectionInterface {
 	 * Delete a job from the queue.
 	 *
 	 * @param Job $job
+	 *
+	 * @return bool
 	 */
 	public function delete( $job ) {
 		$where = array(
 			'id' => $job->id(),
 		);
 
-		$this->database->delete( $this->jobs_table, $where );
+		if ( $this->database->delete( $this->jobs_table, $where ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Release a job back onto the queue.
 	 *
 	 * @param Job $job
+	 *
+	 * @return bool
 	 */
 	public function release( $job ) {
-		$data = array(
+		$data  = array(
 			'job'         => serialize( $job ),
 			'attempts'    => $job->attempts(),
 			'reserved_at' => null,
 		);
-
-		$this->database->update( $this->jobs_table, $data, array(
+		$where = array(
 			'id' => $job->id(),
-		) );
+		);
+
+		if ( $this->database->update( $this->jobs_table, $data, $where ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -120,15 +133,23 @@ class DatabaseConnection implements ConnectionInterface {
 	 *
 	 * @param Job       $job
 	 * @param Exception $exception
+	 *
+	 * @return bool
 	 */
 	public function failure( $job, Exception $exception ) {
-		$this->database->insert( $this->failures_table, array(
+		$insert = $this->database->insert( $this->failures_table, array(
 			'job'       => serialize( $job ),
 			'error'     => $this->format_exception( $exception ),
 			'failed_at' => $this->datetime(),
 		) );
 
-		$this->delete( $job );
+		if ( $insert ) {
+			$this->delete( $job );
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -194,7 +215,7 @@ class DatabaseConnection implements ConnectionInterface {
 
 		$job->set_id( $raw_job->id );
 		$job->set_attempts( $raw_job->attempts );
-		$job->set_reserved_at( new Carbon( $raw_job->reserved_at ) );
+		$job->set_reserved_at( empty( $raw_job->reserved_at ) ? null : new Carbon( $raw_job->reserved_at ) );
 		$job->set_available_at( new Carbon( $raw_job->available_at ) );
 		$job->set_created_at( new Carbon( $raw_job->created_at ) );
 
