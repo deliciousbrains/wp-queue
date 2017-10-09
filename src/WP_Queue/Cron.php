@@ -67,7 +67,7 @@ class Cron {
 
 		if ( ! wp_next_scheduled( "wp_queue_worker_{$this->id}" ) ) {
 			// Schedule health check
-			wp_schedule_event( time(), 'wp_queue_cron_interval', "wp_queue_worker_{$this->id}" );
+			wp_schedule_event( time(), "wp_queue_cron_interval_{$this->id}", "wp_queue_worker_{$this->id}" );
 		}
 
 		return true;
