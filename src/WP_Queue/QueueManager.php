@@ -43,7 +43,7 @@ class QueueManager {
 			throw new ConnectionNotFoundException();
 		}
 
-		static::$instances[ $connection ] = new Queue( $connections[ $connection ], $connection );
+		static::$instances[ $connection ] = new Queue( $connections[ $connection ] );
 
 		return static::$instances[ $connection ];
 	}

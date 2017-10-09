@@ -132,6 +132,8 @@ class TestDatabaseConnection extends TestCase {
 	}
 }
 
-class TestJob extends Job {
-	public function handle() {}
+if ( ! class_exists( 'TestJob' ) ) {
+	class TestJob extends Job {
+		public function handle() {}
+	}
 }

@@ -7,12 +7,17 @@ class Cron {
 	/**
 	 * @var string
 	 */
-	protected $identifier;
+	protected $id;
 
 	/**
 	 * @var Worker
 	 */
 	protected $worker;
+
+	/**
+	 * @var int
+	 */
+	protected $interval;
 
 	/**
 	 * Timestamp of when processing the queue started.
@@ -24,12 +29,14 @@ class Cron {
 	/**
 	 * Cron constructor.
 	 *
-	 * @param string $identifier
+	 * @param string $id
 	 * @param Worker $worker
+	 * @param int    $interval
 	 */
-	public function __construct( $identifier, $worker ) {
-		$this->identifier = $identifier;
-		$this->worker     = $worker;
+	public function __construct( $id, $worker, $interval ) {
+		$this->id       = $id;
+		$this->worker   = $worker;
+		$this->interval = $interval;
 	}
 
 	/**
@@ -37,7 +44,7 @@ class Cron {
 	 *
 	 * @return bool
 	 */
-	public function is_enabled() {
+	protected function is_enabled() {
 		if ( defined( 'DISABLE_WP_QUEUE_CRON' ) && DISABLE_WP_QUEUE_CRON ) {
 			return false;
 		}
@@ -47,30 +54,36 @@ class Cron {
 
 	/**
 	 * Init cron class.
+	 *
+	 * @return bool
 	 */
 	public function init() {
-		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
-		add_action( "wp_queue_worker_{$this->identifier}", array( $this, 'cron_worker' ) );
-
-		if ( ! wp_next_scheduled( "wp_queue_worker_{$this->identifier}" ) ) {
-			// Schedule health check
-			wp_schedule_event( time(), 'wp_queue_cron_interval', "wp_queue_worker_{$this->identifier}" );
+		if ( ! $this->is_enabled() ) {
+			return false;
 		}
+
+		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
+		add_action( "wp_queue_worker_{$this->id}", array( $this, 'cron_worker' ) );
+
+		if ( ! wp_next_scheduled( "wp_queue_worker_{$this->id}" ) ) {
+			// Schedule health check
+			wp_schedule_event( time(), 'wp_queue_cron_interval', "wp_queue_worker_{$this->id}" );
+		}
+
+		return true;
 	}
 
 	/**
-	 * Add 5 minutes to cron schedules.
+	 * Add interval to cron schedules.
 	 *
 	 * @param array $schedules
 	 *
 	 * @return array
 	 */
 	public function schedule_cron( $schedules ) {
-		$interval = apply_filters( 'wp_queue_cron_interval', 5 );
-
-		$schedules['wp_queue_cron_interval'] = array(
-			'interval' => MINUTE_IN_SECONDS * $interval,
-			'display'  => sprintf( __( 'Every %d Minutes' ), $interval ),
+		$schedules["wp_queue_cron_interval_{$this->id}"] = array(
+			'interval' => MINUTE_IN_SECONDS * $this->interval,
+			'display'  => sprintf( __( 'Every %d Minutes' ), $this->interval ),
 		);
 
 		return $schedules;
@@ -121,7 +134,7 @@ class Cron {
 			$memory_limit = '256M';
 		}
 
-		if ( ! $memory_limit || -1 == $memory_limit ) {
+		if ( ! $memory_limit || - 1 == $memory_limit ) {
 			// Unlimited, set to 1GB
 			$memory_limit = '1000M';
 		}

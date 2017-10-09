@@ -12,19 +12,17 @@ class Queue {
 	protected $connection;
 
 	/**
-	 * @var string
+	 * @var Cron
 	 */
-	protected $identifier;
+	protected $cron;
 
 	/**
 	 * Queue constructor.
 	 *
 	 * @param ConnectionInterface $connection
-	 * @param string              $identifier
 	 */
-	public function __construct( ConnectionInterface $connection, $identifier ) {
+	public function __construct( ConnectionInterface $connection ) {
 		$this->connection = $connection;
-		$this->identifier = $identifier;
 	}
 
 	/**
@@ -43,13 +41,17 @@ class Queue {
 	 * Create a cron worker.
 	 *
 	 * @param int $attempts
+	 * @param int $interval
+	 *
+	 * @return Cron
 	 */
-	public function cron( $attempts = 3 ) {
-		$cron = new Cron( $this->identifier, $this->worker( $attempts ) );
-
-		if ( $cron->is_enabled() ) {
-			$cron->init();
+	public function cron( $attempts = 3, $interval = 5 ) {
+		if ( is_null( $this->cron ) ) {
+			$this->cron	= new Cron( get_class( $this->connection ), $this->worker( $attempts ), $interval );
+			$this->cron->init();
 		}
+
+		return $this->cron;
 	}
 
 	/**
