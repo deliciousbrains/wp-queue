@@ -34,7 +34,7 @@ class Cron {
 	 * @param int    $interval
 	 */
 	public function __construct( $id, $worker, $interval ) {
-		$this->id       = $id;
+		$this->id       = strtolower( str_replace( '\\', '_', $id ) );
 		$this->worker   = $worker;
 		$this->interval = $interval;
 	}
@@ -63,11 +63,11 @@ class Cron {
 		}
 
 		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
-		add_action( "wp_queue_worker_{$this->id}", array( $this, 'cron_worker' ) );
+		add_action( $this->id, array( $this, 'cron_worker' ) );
 
-		if ( ! wp_next_scheduled( "wp_queue_worker_{$this->id}" ) ) {
+		if ( ! wp_next_scheduled( $this->id ) ) {
 			// Schedule health check
-			wp_schedule_event( time(), "wp_queue_cron_interval_{$this->id}", "wp_queue_worker_{$this->id}" );
+			wp_schedule_event( time(), $this->id, $this->id );
 		}
 
 		return true;
@@ -81,7 +81,7 @@ class Cron {
 	 * @return array
 	 */
 	public function schedule_cron( $schedules ) {
-		$schedules["wp_queue_cron_interval_{$this->id}"] = array(
+		$schedules[ $this->id ] = array(
 			'interval' => MINUTE_IN_SECONDS * $this->interval,
 			'display'  => sprintf( __( 'Every %d Minutes' ), $this->interval ),
 		);
