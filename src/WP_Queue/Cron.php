@@ -93,13 +93,44 @@ class Cron {
 	 * Process any jobs in the queue.
 	 */
 	public function cron_worker() {
+		if ( $this->is_worker_locked() ) {
+			return;
+		}
+
 		$this->start_time = time();
+
+		$this->lock_worker();
 
 		while ( ! $this->time_exceeded() && ! $this->memory_exceeded() ) {
 			if ( ! $this->worker->process() ) {
 				break;
 			}
 		}
+
+		$this->unlock_worker();
+	}
+
+	/**
+	 * Is the cron worker locked?
+	 *
+	 * @return bool
+	 */
+	protected function is_worker_locked() {
+		return (bool) get_site_transient( $this->id );
+	}
+
+	/**
+	 * Lock the cron worker.
+	 */
+	protected function lock_worker() {
+		set_site_transient( $this->id, time(), 300 );
+	}
+
+	/**
+	 * Unlock the cron worker.
+	 */
+	protected function unlock_worker() {
+		delete_site_transient( $this->id );
 	}
 
 	/**
