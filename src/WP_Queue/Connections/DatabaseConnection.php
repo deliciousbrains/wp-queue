@@ -240,16 +240,21 @@ class DatabaseConnection implements ConnectionInterface {
 	 *
 	 * @param Exception $exception
 	 *
-	 * @return null|string
+	 * @return string
 	 */
 	protected function format_exception( Exception $exception ) {
-		if ( is_null( $exception ) ) {
-			return null;
+		$class  = get_class( $exception );
+		$string = $class;
+
+		if ( ! empty( $exception->getMessage() ) ) {
+			$string .= " : {$exception->getMessage()}";
 		}
 
-		$class = get_class( $exception );
+		if ( ! empty( $exception->getCode() ) ) {
+			$string .= " (#{$exception->getCode()})";
+		}
 
-		return "{$class}: {$exception->getMessage()} (#{$exception->getCode()})";
+		return $string;
 	}
 
 }
