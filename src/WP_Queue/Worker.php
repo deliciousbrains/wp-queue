@@ -4,6 +4,7 @@ namespace WP_Queue;
 
 use Exception;
 use WP_Queue\Connections\ConnectionInterface;
+use WP_Queue\Exceptions\WorkerAttemptsExceededException;
 
 class Worker {
 
@@ -49,6 +50,10 @@ class Worker {
 		}
 
 		if ( $job->attempts() >= $this->attempts ) {
+			if ( empty( $exception ) ) {
+				$exception = new WorkerAttemptsExceededException();
+			}
+			
 			$job->fail();
 		}
 
