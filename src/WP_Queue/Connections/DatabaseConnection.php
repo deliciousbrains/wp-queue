@@ -243,8 +243,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return string
 	 */
 	protected function format_exception( Exception $exception ) {
-		$class  = get_class( $exception );
-		$string = $class;
+		$string = get_class( $exception );
 
 		if ( ! empty( $exception->getMessage() ) ) {
 			$string .= " : {$exception->getMessage()}";
