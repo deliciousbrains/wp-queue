@@ -7,7 +7,7 @@ use WP_Queue\Job;
 
 class SyncConnection implements ConnectionInterface {
 	/**
-	 * Push a job onto the queue.
+	 * Execute the job immediately without pushing to the queue.
 	 *
 	 * @param Job $job
 	 * @param int $delay

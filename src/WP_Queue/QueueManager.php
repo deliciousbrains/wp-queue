@@ -22,8 +22,6 @@ class QueueManager {
 	 * @return Queue
 	 */
 	public static function resolve( $connection ) {
-		$connection = apply_filters( 'wp_queue_default_connection', $connection );
-		
 		if ( isset( static::$instances[ $connection ] ) ) {
 			return static::$instances[ $connection ];
 		}

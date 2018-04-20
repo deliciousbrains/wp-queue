@@ -7,11 +7,15 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	/**
 	 * Return Queue instance.
 	 *
-	 * @param string $connection
+	 * @param string|null $connection
 	 *
 	 * @return Queue
 	 */
-	function wp_queue( $connection = 'database' ) {
+	function wp_queue( $connection = null ) {
+		if(is_null($connection)) {
+			$connection = apply_filters( 'wp_queue_default_connection', 'database' );
+		}
+		
 		return QueueManager::resolve( $connection );
 	}
 }
