@@ -97,6 +97,16 @@ You can also specify the number of times a job should be attempted before being 
 wp_queue()->cron( 3 );
 ```
 
+## Local Development
+
+When developing locally you may want jobs processed instantly, instead of them being pushed to the queue. This can be useful for debugging jobs via Xdebug. Add the following filter to use the `sync` connection:
+
+```
+add_filter( ‘wp_queue_default_connection’, function() {
+	return ‘sync’;
+} );
+```
+
 ## License
 
 WP Queue is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
