@@ -7,12 +7,12 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	/**
 	 * Return Queue instance.
 	 *
-	 * @param string|null $connection
+	 * @param string $connection
 	 *
 	 * @return Queue
 	 */
-	function wp_queue( $connection = null ) {
-		if(is_null($connection)) {
+	function wp_queue( $connection = '' ) {
+		if( empty( $connection ) ) {
 			$connection = apply_filters( 'wp_queue_default_connection', 'database' );
 		}
 		
