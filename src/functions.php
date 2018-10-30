@@ -10,6 +10,7 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	 * @param string $connection
 	 *
 	 * @return Queue
+	 * @throws Exception
 	 */
 	function wp_queue( $connection = '' ) {
 		if( empty( $connection ) ) {

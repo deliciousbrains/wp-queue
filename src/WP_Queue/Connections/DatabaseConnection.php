@@ -9,7 +9,7 @@ use WP_Queue\Job;
 class DatabaseConnection implements ConnectionInterface {
 
 	/**
-	 * @var wpdb
+	 * @var \wpdb
 	 */
 	protected $database;
 
@@ -26,7 +26,7 @@ class DatabaseConnection implements ConnectionInterface {
 	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param wpdb $wpdb
+	 * @param \wpdb $wpdb
 	 */
 	public function __construct( $wpdb ) {
 		$this->database       = $wpdb;
