@@ -20,6 +20,7 @@ class QueueManager {
 	 * @param string $connection
 	 *
 	 * @return Queue
+	 * @throws \Exception
 	 */
 	public static function resolve( $connection ) {
 		if ( isset( static::$instances[ $connection ] ) ) {

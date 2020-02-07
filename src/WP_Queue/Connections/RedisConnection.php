@@ -51,6 +51,8 @@ class RedisConnection implements ConnectionInterface {
 	 *
 	 * @param Job       $job
 	 * @param Exception $exception
+	 *
+	 * @return bool
 	 */
 	public function failure( $job, Exception $exception ) {
 		//
