@@ -165,12 +165,12 @@ class Cron {
 			$memory_limit = '256M';
 		}
 
-		if ( ! $memory_limit || - 1 == $memory_limit ) {
+		if ( ! $memory_limit || -1 == $memory_limit ) {
 			// Unlimited, set to 1GB
 			$memory_limit = '1000M';
 		}
 
-		return intval( $memory_limit ) * 1024 * 1024;
+		return wp_convert_hr_to_bytes( $memory_limit );
 	}
 
 	/**
