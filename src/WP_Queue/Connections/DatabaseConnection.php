@@ -68,7 +68,7 @@ class DatabaseConnection implements ConnectionInterface {
 			SELECT * FROM {$this->jobs_table}
 			WHERE reserved_at IS NULL
 			AND available_at <= %s
-			ORDER BY available_at
+			ORDER BY available_at, id
 			LIMIT 1
 		", $this->datetime() );
 
