@@ -26,7 +26,7 @@ CREATE TABLE {$wpdb->prefix}queue_jobs (
 );
 ```
 
-```
+```sql
 CREATE TABLE {$wpdb->prefix}queue_failures (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     job longtext NOT NULL,
