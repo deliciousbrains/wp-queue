@@ -7,11 +7,11 @@ use WP_Queue\Worker;
 
 class TestWorker extends TestCase {
 
-	public function setUp() {
+	public function setUp() : void {
 		WP_Mock::setUp();
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		WP_Mock::tearDown();
 	}
 
