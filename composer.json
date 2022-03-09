@@ -26,7 +26,8 @@
         "10up/wp_mock": "^0.4.2",
         "humanmade/coding-standards": "^1.1",
         "php-stubs/wp-cli-stubs": "^2.6",
-        "phpstan/phpstan": "^1.4"
+        "phpstan/phpstan": "^1.4",
+        "szepeviktor/phpstan-wordpress": "^1.0"
     },
     "config": {
         "allow-plugins": {
