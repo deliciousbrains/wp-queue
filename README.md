@@ -6,7 +6,7 @@
 
 ## Prerequisites
 
-WP_Queue requires PHP __5.3+__.
+WP_Queue requires PHP __7.3+__.
 
 The following database tables need to be created:
 
@@ -62,7 +62,7 @@ class Subscribe_User_Job extends Job {
 	 */
 	public function handle() {
 		$user = get_user_by( 'ID', $this->user_id );
-		
+
 		// Process the user...
 	}
 
