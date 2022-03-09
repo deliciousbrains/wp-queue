@@ -13,10 +13,10 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	 * @throws Exception
 	 */
 	function wp_queue( $connection = '' ) {
-		if( empty( $connection ) ) {
+		if ( empty( $connection ) ) {
 			$connection = apply_filters( 'wp_queue_default_connection', 'database' );
 		}
-		
+
 		return QueueManager::resolve( $connection );
 	}
 }

@@ -14,7 +14,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool|int
 	 */
-	public function push(Job $job, $delay = 0) {
+	public function push( Job $job, $delay = 0 ) {
 		$job->handle();
 
 		return true;
@@ -36,7 +36,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function delete($job) {
+	public function delete( $job ) {
 		return false;
 	}
 
@@ -47,7 +47,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function release($job) {
+	public function release( $job ) {
 		return false;
 	}
 
@@ -59,7 +59,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function failure($job, Exception $exception) {
+	public function failure( $job, Exception $exception ) {
 		return false;
 	}
 
