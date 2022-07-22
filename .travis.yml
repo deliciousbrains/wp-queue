@@ -1,11 +1,8 @@
 language: php
 
 php:
-<<<<<<< Updated upstream
-=======
   - 7.1
   - 7.2
->>>>>>> Stashed changes
   - 7.3
   - 7.4
 
