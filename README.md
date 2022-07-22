@@ -6,7 +6,7 @@
 
 ## Prerequisites
 
-WP_Queue requires PHP __7.1+__.
+WP_Queue requires PHP __7.3+__.
 
 The following database tables need to be created:
 
