@@ -1,5 +1,5 @@
 {
-    "name": "a5hleyrich/wp-queue",
+    "name": "deliciousbrains/wp-queue",
     "description": "WordPress job queues",
     "keywords": ["wordpress","queue","job"],
     "license": "MIT",
@@ -7,10 +7,18 @@
         {
             "name": "Ashley Rich",
             "email": "hello@ashleyrich.com"
+        },
+        {
+            "name": "Delicious Brains",
+            "email": "nom@deliciousbrains.com"
         }
     ],
     "require": {
+<<<<<<< Updated upstream
         "php": ">=7.3",
+=======
+        "php": ">=7.1.8",
+>>>>>>> Stashed changes
         "nesbot/carbon": "^2.0"
     },
     "autoload": {
