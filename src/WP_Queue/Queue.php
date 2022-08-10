@@ -47,7 +47,7 @@ class Queue {
 	 */
 	public function cron( $attempts = 3, $interval = 5 ) {
 		if ( is_null( $this->cron ) ) {
-			$this->cron	= new Cron( get_class( $this->connection ), $this->worker( $attempts ), $interval );
+			$this->cron = new Cron( get_class( $this->connection ), $this->worker( $attempts ), $interval );
 			$this->cron->init();
 		}
 

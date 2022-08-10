@@ -1,12 +1,12 @@
-[![Build Status](https://travis-ci.org/A5hleyRich/wp-queue.svg?branch=master)](https://travis-ci.org/A5hleyRich/wp-queue)
-[![Code Coverage](https://scrutinizer-ci.com/g/A5hleyRich/wp-queue/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/A5hleyRich/wp-queue/?branch=master)
-[![Total Downloads](https://poser.pugx.org/a5hleyrich/wp-queue/downloads)](https://packagist.org/packages/a5hleyrich/wp-queue)
-[![Latest Stable Version](https://poser.pugx.org/a5hleyrich/wp-queue/v/stable)](https://packagist.org/packages/a5hleyrich/wp-queue)
-[![License](https://poser.pugx.org/a5hleyrich/wp-queue/license)](https://packagist.org/packages/a5hleyrich/wp-queue)
+[![Build Status](https://travis-ci.com/deliciousbrains/wp-queue.svg?branch=master)](https://travis-ci.com/deliciousbrains/wp-queue)
+[![Code Coverage](https://scrutinizer-ci.com/g/deliciousbrains/wp-queue/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/deliciousbrains/wp-queue/?branch=master)
+[![Total Downloads](https://poser.pugx.org/deliciousbrains/wp-queue/downloads)](https://packagist.org/packages/deliciousbrains/wp-queue)
+[![Latest Stable Version](https://poser.pugx.org/deliciousbrains/wp-queue/v/stable)](https://packagist.org/packages/deliciousbrains/wp-queue)
+[![License](https://poser.pugx.org/deliciousbrains/wp-queue/license)](https://packagist.org/packages/deliciousbrains/wp-queue)
 
 ## Prerequisites
 
-WP_Queue requires PHP __5.3+__.
+WP_Queue requires PHP __7.3+__.
 
 The following database tables need to be created:
 
@@ -62,7 +62,7 @@ class Subscribe_User_Job extends Job {
 	 */
 	public function handle() {
 		$user = get_user_by( 'ID', $this->user_id );
-		
+
 		// Process the user...
 	}
 

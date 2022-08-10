@@ -7,7 +7,7 @@ use WP_Queue\QueueManager;
 
 class TestQueueManager extends TestCase {
 
-	public function setUp() {
+	public function setUp() : void {
 		WP_Mock::setUp();
 
 		global $wpdb;
@@ -15,7 +15,7 @@ class TestQueueManager extends TestCase {
 		$wpdb->prefix = 'wp_';
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		WP_Mock::tearDown();
 	}
 

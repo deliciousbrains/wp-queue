@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="Delicious Brains">
+	<!-- Files or directories to check -->
+	<file>.</file>
+
+	<!-- Path to strip from the front of file paths inside reports (displays shorter paths) -->
+	<arg name="basepath" value="." />
+
+	<!-- Use HM Coding Standards -->
+	<rule ref="vendor/humanmade/coding-standards">
+		<!-- Namespace isn't required for all files. -->
+		<exclude name="HM.Functions.NamespacedFunctions.MissingNamespace" />
+		<!-- Ignore rule expecting Namespaced directory. -->
+		<exclude name="HM.Files.NamespaceDirectoryName.NoIncDirectory" />
+		<!-- File name and class name match is not necessary. -->
+		<exclude name="HM.Files.ClassFileName.MismatchedName" />
+		<!-- Ignore class file name rule -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
+		<!-- Ignore rule expecting hyphens in file name. -->
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase" />
+		<!-- Don't require file comment header. -->
+		<exclude name="Squiz.Commenting.FileComment.Missing" />
+	</rule>
+
+	<!-- Ignore Snake case variables for tests -->
+	<rule ref="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+</ruleset>

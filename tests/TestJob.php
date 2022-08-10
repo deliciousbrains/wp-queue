@@ -7,12 +7,12 @@ class TestJobAbstract extends TestCase {
 
 	protected $instance;
 
-	public function setUp() {
+	public function setUp() : void {
 		WP_Mock::setUp();
 		$this->instance = $this->getMockForAbstractClass( Job::class );
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		WP_Mock::tearDown();
 	}
 
