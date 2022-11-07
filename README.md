@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/deliciousbrains/wp-queue.svg?branch=master)](https://travis-ci.com/deliciousbrains/wp-queue)
-[![Code Coverage](https://scrutinizer-ci.com/g/deliciousbrains/wp-queue/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/deliciousbrains/wp-queue/?branch=master)
 [![Total Downloads](https://poser.pugx.org/deliciousbrains/wp-queue/downloads)](https://packagist.org/packages/deliciousbrains/wp-queue)
 [![Latest Stable Version](https://poser.pugx.org/deliciousbrains/wp-queue/v/stable)](https://packagist.org/packages/deliciousbrains/wp-queue)
 [![License](https://poser.pugx.org/deliciousbrains/wp-queue/license)](https://packagist.org/packages/deliciousbrains/wp-queue)
