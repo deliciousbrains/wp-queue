@@ -1,6 +1,10 @@
+# WP Queue
+
 [![Total Downloads](https://poser.pugx.org/deliciousbrains/wp-queue/downloads)](https://packagist.org/packages/deliciousbrains/wp-queue)
 [![Latest Stable Version](https://poser.pugx.org/deliciousbrains/wp-queue/v/stable)](https://packagist.org/packages/deliciousbrains/wp-queue)
 [![License](https://poser.pugx.org/deliciousbrains/wp-queue/license)](https://packagist.org/packages/deliciousbrains/wp-queue)
+
+Job queues for WordPress.
 
 ## Prerequisites
 
@@ -8,24 +12,26 @@ WP_Queue requires PHP __7.3+__.
 
 The following database tables need to be created:
 
-```
+```sql
 CREATE TABLE {$wpdb->prefix}queue_jobs (
-id bigint(20) NOT NULL AUTO_INCREMENT,
-job longtext NOT NULL,
-attempts tinyint(3) NOT NULL DEFAULT 0,
-reserved_at datetime DEFAULT NULL,
-available_at datetime NOT NULL,
-created_at datetime NOT NULL,
-PRIMARY KEY  (id)
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    job longtext NOT NULL,
+    attempts tinyint(3) NOT NULL DEFAULT 0,
+    reserved_at datetime DEFAULT NULL,
+    available_at datetime NOT NULL,
+    created_at datetime NOT NULL,
+    PRIMARY KEY (id)
+);
 ```
 
-```
+```sql
 CREATE TABLE {$wpdb->prefix}queue_failures (
-id bigint(20) NOT NULL AUTO_INCREMENT,
-job longtext NOT NULL,
-error text DEFAULT NULL,
-failed_at datetime NOT NULL,
-PRIMARY KEY  (id)
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    job longtext NOT NULL,
+    error text DEFAULT NULL,
+    failed_at datetime NOT NULL,
+    PRIMARY KEY (id)
+);
 ```
 
 Alternatively, you can call the `wp_queue_install_tables()` helper function to install the tables. If using WP_Queue in a plugin you may opt to call the helper from within your `register_activation_hook`.
@@ -34,7 +40,7 @@ Alternatively, you can call the `wp_queue_install_tables()` helper function to i
 
 Job classes should extend the `WP_Queue\Job` class and normally only contain a `handle` method which is called when the job is processed by the queue worker. Any data required by the job should be passed to the constructor and assigned to a public property. This data will remain available once the job is retrieved from the queue. Let's look at an example job class:
 
-```
+```php
 <?php
 
 use WP_Queue\Job;
@@ -71,13 +77,13 @@ class Subscribe_User_Job extends Job {
 
 Jobs can be pushed to the queue like so:
 
-```
+```php
 wp_queue()->push( new Subscribe_User_Job( 12345 ) );
 ```
 
 You can create delayed jobs by passing an optional second parameter to the `push` method. This job will be delayed by 60 minutes:
 
-```
+```php
 wp_queue()->push( new Subscribe_User_Job( 12345 ), 3600 );
 ```
 
@@ -85,23 +91,23 @@ wp_queue()->push( new Subscribe_User_Job( 12345 ), 3600 );
 
 Jobs need to be processed by a queue worker. You can start a cron worker like so, which piggy backs onto WP cron:
 
-```
+```php
 wp_queue()->cron();
 ```
 
 You can also specify the number of times a job should be attempted before being marked as a failure.
 
-```
+```php
 wp_queue()->cron( 3 );
 ```
 
 ## Local Development
 
-When developing locally you may want jobs processed instantly, instead of them being pushed to the queue. This can be useful for debugging jobs via Xdebug. Add the following filter to use the `sync` connection:
+When developing locally you may want jobs processed instantly, instead of them being pushed to the queue. This can be useful for debugging jobs via Xdebug. Add the following filter to use the `sync` connection.
 
-```
-add_filter( ‘wp_queue_default_connection’, function() {
-	return ‘sync’;
+```php
+add_filter( 'wp_queue_default_connection', function() {
+	return 'sync';
 } );
 ```
 
