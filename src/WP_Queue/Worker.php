@@ -53,13 +53,13 @@ class Worker {
 			if ( empty( $exception ) ) {
 				$exception = new WorkerAttemptsExceededException();
 			}
-			
+
 			$job->fail();
 		}
 
 		if ( $job->failed() ) {
 			$this->connection->failure( $job, $exception );
-		} else if ( $job->released() ) {
+		} elseif ( $job->released() ) {
 			$this->connection->release( $job );
 		} else {
 			$this->connection->delete( $job );

@@ -43,11 +43,11 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return bool|int
 	 */
 	public function push( Job $job, $delay = 0 ) {
-		$result = $this->database->insert( $this->jobs_table, array(
+		$result = $this->database->insert( $this->jobs_table, [
 			'job'          => serialize( $job ),
 			'available_at' => $this->datetime( $delay ),
 			'created_at'   => $this->datetime(),
-		) );
+		] );
 
 		if ( ! $result ) {
 			return false;
@@ -68,7 +68,7 @@ class DatabaseConnection implements ConnectionInterface {
 			SELECT * FROM {$this->jobs_table}
 			WHERE reserved_at IS NULL
 			AND available_at <= %s
-			ORDER BY available_at
+			ORDER BY available_at, id
 			LIMIT 1
 		", $this->datetime() );
 
@@ -93,9 +93,9 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return bool
 	 */
 	public function delete( $job ) {
-		$where = array(
+		$where = [
 			'id' => $job->id(),
-		);
+		];
 
 		if ( $this->database->delete( $this->jobs_table, $where ) ) {
 			return true;
@@ -112,14 +112,14 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return bool
 	 */
 	public function release( $job ) {
-		$data  = array(
+		$data  = [
 			'job'         => serialize( $job ),
 			'attempts'    => $job->attempts(),
 			'reserved_at' => null,
-		);
-		$where = array(
+		];
+		$where = [
 			'id' => $job->id(),
-		);
+		];
 
 		if ( $this->database->update( $this->jobs_table, $data, $where ) ) {
 			return true;
@@ -137,11 +137,11 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return bool
 	 */
 	public function failure( $job, Exception $exception ) {
-		$insert = $this->database->insert( $this->failures_table, array(
+		$insert = $this->database->insert( $this->failures_table, [
 			'job'       => serialize( $job ),
 			'error'     => $this->format_exception( $exception ),
 			'failed_at' => $this->datetime(),
-		) );
+		] );
 
 		if ( $insert ) {
 			$this->delete( $job );
@@ -159,7 +159,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 */
 	public function jobs() {
 		$sql = "SELECT COUNT(*) FROM {$this->jobs_table}";
-		
+
 		return (int) $this->database->get_var( $sql );
 	}
 
@@ -180,13 +180,13 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @param Job $job
 	 */
 	protected function reserve( $job ) {
-		$data = array(
+		$data = [
 			'reserved_at' => $this->datetime(),
-		);
+		];
 
-		$this->database->update( $this->jobs_table, $data, array(
+		$this->database->update( $this->jobs_table, $data, [
 			'id' => $job->id(),
-		) );
+		] );
 	}
 
 	/**

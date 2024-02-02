@@ -62,8 +62,8 @@ class Cron {
 			return false;
 		}
 
-		add_filter( 'cron_schedules', array( $this, 'schedule_cron' ) );
-		add_action( $this->id, array( $this, 'cron_worker' ) );
+		add_filter( 'cron_schedules', [ $this, 'schedule_cron' ] );
+		add_action( $this->id, [ $this, 'cron_worker' ] );
 
 		if ( ! wp_next_scheduled( $this->id ) ) {
 			// Schedule health check
@@ -81,10 +81,10 @@ class Cron {
 	 * @return array
 	 */
 	public function schedule_cron( $schedules ) {
-		$schedules[ $this->id ] = array(
+		$schedules[ $this->id ] = [
 			'interval' => MINUTE_IN_SECONDS * $this->interval,
 			'display'  => sprintf( __( 'Every %d Minutes' ), $this->interval ),
-		);
+		];
 
 		return $schedules;
 	}

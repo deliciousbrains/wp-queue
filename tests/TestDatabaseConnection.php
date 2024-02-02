@@ -9,14 +9,14 @@ class TestDatabaseConnection extends TestCase {
 
 	protected $wpdb;
 
-	public function setUp() {
+	public function setUp() : void {
 		WP_Mock::setUp();
 
 		$this->wpdb = Mockery::spy( 'WPDB' );;
 		$this->wpdb->prefix = "wp_";
 	}
 
-	public function tearDown() {
+	public function tearDown() : void {
 		WP_Mock::tearDown();
 	}
 
