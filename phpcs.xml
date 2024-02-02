@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<ruleset name="Delicious Brains">
+	<!-- What to scan -->
+	<file>.</file>
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+
+	<!-- How to scan -->
+	<!-- Usage instructions: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage -->
+	<!-- Annotated ruleset: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
+	<!-- Show sniff and progress -->
+	<arg value="sp"/>
+	<!-- Path to strip from the front of file paths inside reports (displays shorter paths) -->
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<!-- Enables parallel processing when available for faster results. -->
+	<arg name="parallel" value="8"/>
+
+	<!-- Rules: Check PHP version compatibility -->
+	<!-- https://github.com/PHPCompatibility/PHPCompatibility#sniffing-your-code-for-compatibility-with-specific-php-versions -->
+	<config name="testVersion" value="7.3-"/>
+	<!-- https://github.com/PHPCompatibility/PHPCompatibilityWP -->
+	<rule ref="PHPCompatibilityWP"/>
+
+	<!-- Rules: WordPress Coding Standards -->
+	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards -->
+	<!-- https://github.com/WordPress-Coding-Standards/WordPress-Coding-Standards/wiki/Customizable-sniff-properties -->
+	<config name="minimum_supported_wp_version" value="5.0"/>
+
+	<!-- Use HM Coding Standards -->
+	<rule ref="vendor/humanmade/coding-standards">
+		<!-- Namespace isn't required for all files. -->
+		<exclude name="HM.Functions.NamespacedFunctions.MissingNamespace"/>
+		<!-- Ignore rule expecting Namespaced directory. -->
+		<exclude name="HM.Files.NamespaceDirectoryName.NoIncDirectory"/>
+		<!-- File name and class name match is not necessary. -->
+		<exclude name="HM.Files.ClassFileName.MismatchedName"/>
+		<!-- Ignore class file name rule -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<!-- Ignore rule expecting hyphens in file name. -->
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+
+		<!-- TODO: Probably can't fix -->
+		<!-- Ignore rule detected changing of cron_schedules, but could not detect the interval value. -->
+		<exclude name="WordPress.WP.CronInterval.ChangeDetected"/>
+
+		<!-- TODO: Could fix -->
+		<!-- Don't require file comment header. -->
+		<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		<!-- Don't require class comment header. -->
+		<exclude name="Squiz.Commenting.ClassComment.Missing"/>
+		<!-- Don't require parameter comment. -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<!-- Don't require short description in doc comment. -->
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<!-- Inline comments must end in full-stops, exclamation marks, or question marks. -->
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<!-- Comment missing for @throws tag in function comment. -->
+		<exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
+		<!-- Missing @throws tag for "ConnectionNotFoundException" exception. -->
+		<exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
+
+		<!-- TODO: Should fix -->
+		<!--Found: ==. Use strict comparisons (=== or !==). -->
+		<exclude name="WordPress.PHP.StrictComparisons.LooseComparison"/>
+		<!-- Unused use statement. -->
+		<exclude name="PSR2R.Namespaces.UnusedUseStatement.UnusedUse"/>
+		<exclude name="Squiz.Commenting.FunctionComment.InvalidNoReturn"/>
+	</rule>
+
+	<!-- Ignore Snake case variables for tests -->
+	<rule
+		ref="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+</ruleset>
