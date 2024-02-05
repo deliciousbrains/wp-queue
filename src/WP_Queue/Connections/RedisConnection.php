@@ -5,6 +5,12 @@ namespace WP_Queue\Connections;
 use Exception;
 use WP_Queue\Job;
 
+/**
+ * An incomplete example of how a new ConnectionInterface could be set up
+ * for storing queue jobs.
+ *
+ * Please see the DatabaseConnection class for a complete working implementation.
+ */
 class RedisConnection implements ConnectionInterface {
 
 	/**

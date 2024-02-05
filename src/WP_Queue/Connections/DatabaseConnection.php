@@ -5,8 +5,13 @@ namespace WP_Queue\Connections;
 use Carbon\Carbon;
 use Exception;
 use wpdb;
+use WP_Queue\Exceptions\InvalidJobTypeException;
 use WP_Queue\Job;
 
+/**
+ * An implementation of the ConnectionInterface that uses custom database tables
+ * for storing queue jobs.
+ */
 class DatabaseConnection implements ConnectionInterface {
 
 	/**
@@ -25,14 +30,21 @@ class DatabaseConnection implements ConnectionInterface {
 	protected $failures_table;
 
 	/**
+	 * @var array|bool
+	 */
+	protected $allowed_job_classes = [];
+
+	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param wpdb $wpdb
+	 * @param wpdb  $wpdb
+	 * @param array $allowed_job_classes Job classes that may be handled, default any Job subclass.
 	 */
-	public function __construct( $wpdb ) {
-		$this->database       = $wpdb;
-		$this->jobs_table     = $this->database->prefix . 'queue_jobs';
-		$this->failures_table = $this->database->prefix . 'queue_failures';
+	public function __construct( $wpdb, array $allowed_job_classes = [] ) {
+		$this->database            = $wpdb;
+		$this->allowed_job_classes = $allowed_job_classes;
+		$this->jobs_table          = $this->database->prefix . 'queue_jobs';
+		$this->failures_table      = $this->database->prefix . 'queue_failures';
 	}
 
 	/**
@@ -81,7 +93,9 @@ class DatabaseConnection implements ConnectionInterface {
 
 		$job = $this->vitalize_job( $raw_job );
 
-		$this->reserve( $job );
+		if ( $job && is_a( $job, Job::class ) ) {
+			$this->reserve( $job );
+		}
 
 		return $job;
 	}
@@ -94,8 +108,17 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return bool
 	 */
 	public function delete( $job ) {
+		if ( is_a( $job, Job::class ) ) {
+			$id = $job->id();
+		} elseif ( is_object( $job ) && property_exists( $job, 'id' ) ) {
+			$raw_job = (object) $job;
+			$id      = $raw_job->id;
+		} else {
+			return false;
+		}
+
 		$where = [
-			'id' => $job->id(),
+			'id' => $id,
 		];
 
 		if ( $this->database->delete( $this->jobs_table, $where ) ) {
@@ -209,10 +232,21 @@ class DatabaseConnection implements ConnectionInterface {
 	 *
 	 * @param mixed $raw_job
 	 *
-	 * @return Job
+	 * @return Job|bool
 	 */
 	protected function vitalize_job( $raw_job ) {
-		$job = unserialize( $raw_job->job );
+		$options = [];
+		if ( ! empty( $this->allowed_job_classes ) ) {
+			$options['allowed_classes'] = $this->allowed_job_classes;
+		}
+
+		$job = unserialize( $raw_job->job, $options );
+
+		if ( ! is_a( $job, Job::class ) ) {
+			$this->failure( $raw_job, new InvalidJobTypeException() );
+
+			return false;
+		}
 
 		$job->set_id( $raw_job->id );
 		$job->set_attempts( $raw_job->attempts );
