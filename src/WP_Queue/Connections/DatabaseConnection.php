@@ -4,7 +4,6 @@ namespace WP_Queue\Connections;
 
 use Carbon\Carbon;
 use Exception;
-use wpdb;
 use WP_Queue\Exceptions\InvalidJobTypeException;
 use WP_Queue\Job;
 
@@ -15,7 +14,7 @@ use WP_Queue\Job;
 class DatabaseConnection implements ConnectionInterface {
 
 	/**
-	 * @var wpdb
+	 * @var \wpdb
 	 */
 	protected $database;
 
@@ -37,7 +36,7 @@ class DatabaseConnection implements ConnectionInterface {
 	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param wpdb  $wpdb
+	 * @param \wpdb $wpdb
 	 * @param array $allowed_job_classes Job classes that may be handled, default any Job subclass.
 	 */
 	public function __construct( $wpdb, array $allowed_job_classes = [] ) {
