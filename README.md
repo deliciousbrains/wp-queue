@@ -111,6 +111,72 @@ You can also specify the number of times a job should be attempted before being 
 wp_queue()->cron( 3 );
 ```
 
+## Restricting Allowed Job Classes
+
+The queue will handle any subclass of `WP_Queue\Job`. For better security,
+it is strongly recommended that the `DatabaseConnection` be instantiated with a list
+of allowed `Job` subclasses that are expected to be handled.
+
+You can do that by passing in an array of `Job` subclasses when the `Queue` sets
+up its database connection, or by having a database connection that only handles
+certain `Job` subclasses.
+
+```php
+class Connection extends DatabaseConnection {
+    public function __construct( $wpdb, array $allowed_job_classes = [] ) {
+        // If a connection is always dealing with the same Jobs,
+        // you could explicitly set the allowed job classes here
+        // rather than pass them in.
+        if ( empty( $allowed_job_classes ) ) {
+            $allowed_job_classes = [ Subscribe_User_Job::class ];
+        }
+
+        parent::__construct( $wpdb, $allowed_job_classes );
+
+        $this->jobs_table     = $wpdb->base_prefix . 'myplugin_subs_jobs';
+        $this->failures_table = $wpdb->base_prefix . 'myplugin_subs_failures';
+    }
+}
+
+class Subscribe_User_Queue extends Queue {
+    public function __construct() {
+        global $wpdb;
+
+        // Set up custom database queue, with list of allowed job classes.
+        parent::__construct( new Connection( $wpdb, [ Subscribe_User_Job::class ] ) );
+
+        // Other set up stuff ...
+    }
+}
+
+class MyPlugin {
+    /**
+     * @var Subscribe_User_Queue
+     */
+    private $queue;
+
+    public function __construct() {
+        // Part of bring-up ...
+        $this->queue = new Subscribe_User_Queue();
+        
+        // Other stuff ...
+    }
+
+    protected function subscribe_user( $user_id ) {
+        $this->queue->push( new Subscribe_User_Job( $user_id ) );
+    }
+
+    /**
+     * Triggered by cron or background process etc.
+     *
+     * @return bool
+     */
+    protected function process_queue_job() {
+        return $this->queue->worker()->process();
+    }
+}
+```
+
 ## Local Development
 
 When developing locally you may want jobs processed instantly, instead of them being pushed to the queue. This can be useful for debugging jobs via Xdebug. Add the following filter to use the `sync` connection.
