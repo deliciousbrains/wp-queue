@@ -4,12 +4,13 @@ namespace WP_Queue\Connections;
 
 use Carbon\Carbon;
 use Exception;
+use wpdb;
 use WP_Queue\Job;
 
 class DatabaseConnection implements ConnectionInterface {
 
 	/**
-	 * @var \wpdb
+	 * @var wpdb
 	 */
 	protected $database;
 
@@ -26,7 +27,7 @@ class DatabaseConnection implements ConnectionInterface {
 	/**
 	 * DatabaseQueue constructor.
 	 *
-	 * @param \wpdb $wpdb
+	 * @param wpdb $wpdb
 	 */
 	public function __construct( $wpdb ) {
 		$this->database       = $wpdb;
@@ -111,7 +112,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function release( $job ) {
+	public function release( Job $job ) {
 		$data  = [
 			'job'         => serialize( $job ),
 			'attempts'    => $job->attempts(),
@@ -158,7 +159,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return int
 	 */
 	public function jobs() {
-		$sql = "SELECT COUNT(*) FROM {$this->jobs_table}";
+		$sql = "SELECT COUNT(*) FROM $this->jobs_table";
 
 		return (int) $this->database->get_var( $sql );
 	}
@@ -169,7 +170,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 * @return int
 	 */
 	public function failed_jobs() {
-		$sql = "SELECT COUNT(*) FROM {$this->failures_table}";
+		$sql = "SELECT COUNT(*) FROM $this->failures_table";
 
 		return (int) $this->database->get_var( $sql );
 	}
@@ -179,7 +180,7 @@ class DatabaseConnection implements ConnectionInterface {
 	 *
 	 * @param Job $job
 	 */
-	protected function reserve( $job ) {
+	protected function reserve( Job $job ) {
 		$data = [
 			'reserved_at' => $this->datetime(),
 		];
@@ -255,5 +256,4 @@ class DatabaseConnection implements ConnectionInterface {
 
 		return $string;
 	}
-
 }

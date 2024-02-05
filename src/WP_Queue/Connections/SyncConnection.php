@@ -6,6 +6,7 @@ use Exception;
 use WP_Queue\Job;
 
 class SyncConnection implements ConnectionInterface {
+
 	/**
 	 * Execute the job immediately without pushing to the queue.
 	 *
@@ -47,7 +48,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function release( $job ) {
+	public function release( Job $job ) {
 		return false;
 	}
 
