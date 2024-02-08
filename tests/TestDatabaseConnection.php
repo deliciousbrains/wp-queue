@@ -9,14 +9,14 @@ class TestDatabaseConnection extends TestCase {
 
 	protected $wpdb;
 
-	public function setUp() : void {
+	public function setUp(): void {
 		WP_Mock::setUp();
 
-		$this->wpdb = Mockery::spy( 'WPDB' );;
+		$this->wpdb         = Mockery::spy( 'WPDB' );
 		$this->wpdb->prefix = "wp_";
 	}
 
-	public function tearDown() : void {
+	public function tearDown(): void {
 		WP_Mock::tearDown();
 	}
 
@@ -48,7 +48,7 @@ class TestDatabaseConnection extends TestCase {
 			'created_at'   => '2017-10-09 00:00:00',
 		) );
 		$instance = new DatabaseConnection( $this->wpdb );
-		$job = $instance->pop();
+		$job      = $instance->pop();
 
 		$this->assertInstanceOf( TestJob::class, $job );
 		$this->assertEquals( 12345, $job->id() );
@@ -130,10 +130,184 @@ class TestDatabaseConnection extends TestCase {
 
 		$this->assertEquals( $count, $instance->failed_jobs() );
 	}
+
+	public function test_pop_success_test_job_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( new TestJob() ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb, [ TestJob::class ] );
+		$job      = $instance->pop();
+
+		$this->assertInstanceOf( TestJob::class, $job );
+		$this->assertEquals( 12345, $job->id() );
+		$this->assertEquals( 0, $job->attempts() );
+		$this->assertNull( $job->reserved_at() );
+		$this->assertInstanceOf( Carbon::class, $job->available_at() );
+		$this->assertInstanceOf( Carbon::class, $job->created_at() );
+	}
+
+	public function test_pop_fail_null_not_job() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( null ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_string_not_job() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( 'wibble' ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_array_not_job() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( [ 'one' => 1, 'two' => 2 ] ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_std_object_not_job() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( (object) [ 'one' => 1, 'two' => 2 ] ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_null_not_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( null ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_string_not_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( 'wibble' ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_array_not_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( [ 'one' => 1, 'two' => 2 ] ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_std_object_not_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( (object) [ 'one' => 1, 'two' => 2 ] ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_fail_fake_job_not_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( new FakeJob() ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb, [ TestJob::class ] );
+
+		$this->assertFalse( $instance->pop() );
+	}
+
+	public function test_pop_success_fake_job_any_allowed() {
+		$this->wpdb->shouldReceive( 'get_row' )->once()->andReturn( (object) array(
+			'id'           => 12345,
+			'job'          => serialize( new FakeJob() ),
+			'attempts'     => 0,
+			'reserved_at'  => null,
+			'available_at' => '2017-10-09 00:00:00',
+			'created_at'   => '2017-10-09 00:00:00',
+		) );
+		$instance = new DatabaseConnection( $this->wpdb, [] );
+		$job      = $instance->pop();
+
+		$this->assertInstanceOf( FakeJob::class, $job );
+		$this->assertEquals( 12345, $job->id() );
+		$this->assertEquals( 0, $job->attempts() );
+		$this->assertNull( $job->reserved_at() );
+		$this->assertInstanceOf( Carbon::class, $job->available_at() );
+		$this->assertInstanceOf( Carbon::class, $job->created_at() );
+	}
 }
 
 if ( ! class_exists( 'TestJob' ) ) {
 	class TestJob extends Job {
-		public function handle() {}
+		public function handle() {
+		}
+	}
+}
+
+if ( ! class_exists( 'FakeJob' ) ) {
+	class FakeJob extends Job {
+		public function handle() {
+		}
 	}
 }

@@ -3,6 +3,7 @@
 namespace WP_Queue;
 
 use Exception;
+use WP_Queue\Connections\ConnectionInterface;
 use WP_Queue\Exceptions\WorkerAttemptsExceededException;
 
 class Worker {

@@ -5,7 +5,14 @@ namespace WP_Queue\Connections;
 use Exception;
 use WP_Queue\Job;
 
+/**
+ * A minimal implementation of the ConnectionInterface that handles a pushed
+ * Job immediately.
+ *
+ * Useful for local development when only wanting to debug how Job items are handled.
+ */
 class SyncConnection implements ConnectionInterface {
+
 	/**
 	 * Execute the job immediately without pushing to the queue.
 	 *
@@ -47,7 +54,7 @@ class SyncConnection implements ConnectionInterface {
 	 *
 	 * @return bool
 	 */
-	public function release( $job ) {
+	public function release( Job $job ) {
 		return false;
 	}
 

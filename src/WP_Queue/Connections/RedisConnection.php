@@ -5,6 +5,12 @@ namespace WP_Queue\Connections;
 use Exception;
 use WP_Queue\Job;
 
+/**
+ * An incomplete example of how a new ConnectionInterface could be set up
+ * for storing queue jobs.
+ *
+ * Please see the DatabaseConnection class for a complete working implementation.
+ */
 class RedisConnection implements ConnectionInterface {
 
 	/**
@@ -16,6 +22,7 @@ class RedisConnection implements ConnectionInterface {
 	 * @return bool|int
 	 */
 	public function push( Job $job, $delay = 0 ) {
+		return false;
 	}
 
 	/**
@@ -24,22 +31,29 @@ class RedisConnection implements ConnectionInterface {
 	 * @return bool|Job
 	 */
 	public function pop() {
+		return false;
 	}
 
 	/**
 	 * Delete a job from the queue.
 	 *
 	 * @param Job $job
+	 *
+	 * @return bool
 	 */
 	public function delete( $job ) {
+		return false;
 	}
 
 	/**
 	 * Release a job back onto the queue.
 	 *
 	 * @param Job $job
+	 *
+	 * @return bool
 	 */
-	public function release( $job ) {
+	public function release( Job $job ) {
+		return false;
 	}
 
 	/**
@@ -51,6 +65,7 @@ class RedisConnection implements ConnectionInterface {
 	 * @return bool
 	 */
 	public function failure( $job, Exception $exception ) {
+		return false;
 	}
 
 	/**
@@ -59,6 +74,7 @@ class RedisConnection implements ConnectionInterface {
 	 * @return int
 	 */
 	public function jobs() {
+		return 0;
 	}
 
 	/**
@@ -67,6 +83,6 @@ class RedisConnection implements ConnectionInterface {
 	 * @return int
 	 */
 	public function failed_jobs() {
+		return 0;
 	}
-
 }

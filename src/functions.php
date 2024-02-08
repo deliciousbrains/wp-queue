@@ -8,16 +8,17 @@ if ( ! function_exists( 'wp_queue' ) ) {
 	 * Return Queue instance.
 	 *
 	 * @param string $connection
+	 * @param array  $allowed_job_classes Job classes that may be handled. Default, any Job subclass.
 	 *
 	 * @return Queue
 	 * @throws Exception
 	 */
-	function wp_queue( $connection = '' ) {
+	function wp_queue( $connection = '', array $allowed_job_classes = [] ) {
 		if ( empty( $connection ) ) {
 			$connection = apply_filters( 'wp_queue_default_connection', 'database' );
 		}
 
-		return QueueManager::resolve( $connection );
+		return QueueManager::resolve( $connection, $allowed_job_classes );
 	}
 }
 
