@@ -47,13 +47,18 @@ class Worker {
 			$job->handle();
 		} catch ( Exception $exception ) {
 			$job->release();
+
+			// Check if this release puts us over the attempt limit
+			if ($job->attempts() >= $this->attempts) {
+				$job->fail();
+			}
 		}
 
-		if ( $job->attempts() >= $this->attempts ) {
+		// Handle non-exception failures
+		if (! $job->released() && ! $job->failed() && $job->attempts() >= $this->attempts) {
 			if ( empty( $exception ) ) {
 				$exception = new WorkerAttemptsExceededException();
 			}
-
 			$job->fail();
 		}
 
