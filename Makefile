@@ -10,7 +10,7 @@ test-style: vendor
 	vendor/bin/phpcs
 
 vendor: composer.json
-	composer install --ignore-platform-reqs
+	composer install
 
 .PHONY: update-deps
 update-deps:
