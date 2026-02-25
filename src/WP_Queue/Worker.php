@@ -67,5 +67,4 @@ class Worker {
 
 		return true;
 	}
-
 }

@@ -66,7 +66,7 @@ class Cron {
 		add_action( $this->id, [ $this, 'cron_worker' ] );
 
 		if ( ! wp_next_scheduled( $this->id ) ) {
-			// Schedule health check
+			// Schedule health check.
 			wp_schedule_event( time(), $this->id, $this->id );
 		}
 
@@ -142,7 +142,8 @@ class Cron {
 	 * @return bool
 	 */
 	protected function memory_exceeded() {
-		$memory_limit   = $this->get_memory_limit() * 0.8; // 80% of max memory
+		// 80% of max memory.
+		$memory_limit   = $this->get_memory_limit() * 0.8;
 		$current_memory = memory_get_usage( true );
 		$return         = false;
 
@@ -165,8 +166,9 @@ class Cron {
 			$memory_limit = '256M';
 		}
 
+		// phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual
 		if ( ! $memory_limit || -1 == $memory_limit ) {
-			// Unlimited, set to 1GB
+			// Unlimited, set to 1GB.
 			$memory_limit = '1000M';
 		}
 
@@ -182,7 +184,8 @@ class Cron {
 	 * @return bool
 	 */
 	protected function time_exceeded() {
-		$finish = $this->start_time + apply_filters( 'wp_queue_cron_time_limit', 20 ); // 20 seconds
+		// Default to 20 seconds.
+		$finish = $this->start_time + apply_filters( 'wp_queue_cron_time_limit', 20 );
 		$return = false;
 
 		if ( time() >= $finish ) {

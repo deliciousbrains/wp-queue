@@ -61,5 +61,4 @@ interface ConnectionInterface {
 	 * @return int
 	 */
 	public function failed_jobs();
-
 }

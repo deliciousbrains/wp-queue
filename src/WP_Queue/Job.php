@@ -140,6 +140,7 @@ abstract class Job {
 	 * Flag job as released.
 	 */
 	public function release() {
+		// phpcs:ignore Generic.Formatting.MultipleStatementAlignment.NotSameWarning
 		$this->released = true;
 		$this->attempts += 1;
 	}
@@ -192,5 +193,4 @@ abstract class Job {
 
 		return array_keys( $object_props );
 	}
-
 }
