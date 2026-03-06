@@ -10,7 +10,7 @@ test-style: vendor
 	vendor/bin/phpcs
 
 vendor: composer.json
-	composer install --ignore-platform-reqs
+	composer install
 
 .PHONY: update-deps
 update-deps:
@@ -18,5 +18,9 @@ update-deps:
 
 .PHONY: clean
 clean:
+	rm -f tests/.phpunit.result.cache .phpunit.result.cache
+
+.PHONY: clean-all
+clean-all: clean
 	rm -rf vendor
-	rm -f tests/.phpunit.result.cache
+	rm -f composer.lock coverage.clover
